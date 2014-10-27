@@ -1,7 +1,7 @@
 <?php
 require_once 'tests/res/ContainerTestResource.php';
 
-use \Ranyuen\Container;
+use \Ranyuen\Di\Container;
 
 class ContainerTest extends PHPUnit_Framework_TestCase
 {

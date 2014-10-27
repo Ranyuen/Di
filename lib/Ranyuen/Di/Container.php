@@ -11,56 +11,23 @@
  * @copyright 2014-2014 Ranyuen
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
  * @version   GIT: 0.0.1
- * @link      https://github.com/Ranyuen/web
+ * @link      https://github.com/Ranyuen/Di
  */
-namespace Ranyuen;
+namespace Ranyuen\Di;
 
-use \Pimple;
-use \ReflectionClass;
-use \ReflectionException;
+use Pimple;
+use ReflectionClass;
+use ReflectionException;
 
 /**
  * Simple DI (Dependency Injector) extending Pimple.
- *
- * cf. fabpot/Pimple
- * cf. koriym/Ray.Di
  *
  * @category Ranyuen
  * @package  Ranyuen
  * @author   Ranyuen <cal_pone@ranyuen.com>
  * @author   ne_Sachirou <utakata.c4se@gmail.com>
  * @license  http://www.gnu.org/copyleft/gpl.html GPL
- * @link     https://github.com/Ranyuen/web
- *
- * @example
- * <code>
- * class Momonga { }
- *
- * $container = new \Ranyuen\Container;
- * $container->bind('Momonga', 'momonga', function ($c) { return new Momonga; });
- *
- * class Yuraru
- * {
- *     /** @Inject * /
- *     public function __construct(Momonga $momonga) { }
- * }
- *
- * $yuraru = $container->newInstance('Yuraru');
- *
- * class Gardea
- * {
- *     /**
- *      * @Inject
- *      * @var Momonga
- *      * /
- *     public $momonga;
- * }
- *
- * $gardea = $container->newInstance();
- *
- * $gardea = new Gardea;
- * $container->inject($gardea);
- * </code>
+ * @link     https://github.com/Ranyuen/Di
  */
 class Container extends Pimple\Container
 {
@@ -96,7 +63,7 @@ class Container extends Pimple\Container
     {
         $interface = new ReflectionClass(get_class($obj));
         foreach ($interface->getProperties() as $prop) {
-            if (!$this->hasAnnotationInject($prop)) {
+            if (!(new Annotation())->isInjectable($prop)) {
                 continue;
             }
             $matches = [];
@@ -111,7 +78,7 @@ class Container extends Pimple\Container
                 $id = $this->_class_names[$prop_class];
             } else {
                 $id = $prop->getName();
-                $named = $this->getNamed($prop);
+                $named = (new Annotation())->getNamed($prop);
                 if (isset($named[$id])) {
                     $id = $named[$id];
                 }
@@ -141,8 +108,8 @@ class Container extends Pimple\Container
         } catch (ReflectionException $ex) {
             $method = null;
         }
-        if ($method && $this->hasAnnotationInject($method)) {
-            $named = $this->getNamed($method);
+        if ($method && (new Annotation())->isInjectable($method)) {
+            $named = (new Annotation())->getNamed($method);
             $i = 0;
             foreach ($method->getParameters() as $param) {
                 $param_class = $param->getClass();
@@ -167,37 +134,5 @@ class Container extends Pimple\Container
         $this->inject($obj);
 
         return $obj;
-    }
-
-    /**
-     * @return boolean
-     */
-    private function hasAnnotationInject($target)
-    {
-        return !!preg_match(
-            '/^\\s*(?:\\/\\*)?\\*\\s*@Inject/m',
-            $target->getDocComment()
-        );
-    }
-
-    /**
-     * @return array
-     */
-    private function getNamed($target)
-    {
-        $matches = [];
-        $named = [];
-        if (preg_match(
-            '/^\\s*(?:\\/\\*)?\\*\\s*@Named\\([\'"]([^\'"]+)[\'"]\\)/m',
-            $target->getDocComment(),
-            $matches
-        )) {
-            foreach (explode(',', $matches[1]) as $field) {
-                $field = explode('=', $field);
-                $named[$field[0]] = $field[1];
-            }
-        }
-
-        return $named;
     }
 }
