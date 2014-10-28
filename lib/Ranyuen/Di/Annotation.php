@@ -24,12 +24,12 @@ class Annotation {
     {
         $matches = [];
         $named = [];
-        if (preg_match(
+        if (preg_match_all(
             '/^\\s*(?:\\/\\*)?\\*\\s*@Named\\([\'"]([^\'"]+)[\'"]\\)/m',
             $target->getDocComment(),
             $matches
         )) {
-            foreach (explode(',', $matches[1]) as $field) {
+            foreach (explode(',', implode(',', $matches[1])) as $field) {
                 $field = explode('=', $field);
                 $named[$field[0]] = $field[1];
             }
