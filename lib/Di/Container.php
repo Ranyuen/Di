@@ -1,11 +1,11 @@
 <?php
 /**
- * Simple DI (Dependency Injector) extending Pimple.
+ * Simple Ray.Di style DI (Dependency Injector) extending Pimple.
  *
  * PHP version 5
  *
- * @category  Ranyuen
- * @package   Ranyuen
+ * @category  Di
+ * @package   Ranyuen\Di
  * @author    Ranyuen <cal_pone@ranyuen.com>
  * @author    ne_Sachirou <utakata.c4se@gmail.com>
  * @copyright 2014-2014 Ranyuen
@@ -20,10 +20,10 @@ use ReflectionClass;
 use ReflectionException;
 
 /**
- * Simple DI (Dependency Injector) extending Pimple.
+ * Simple Ray.Di style DI (Dependency Injector) extending Pimple.
  *
- * @category Ranyuen
- * @package  Ranyuen
+ * @category Di
+ * @package  Ranyuen\Di
  * @author   Ranyuen <cal_pone@ranyuen.com>
  * @author   ne_Sachirou <utakata.c4se@gmail.com>
  * @license  http://www.gnu.org/copyleft/gpl.html GPL
@@ -32,13 +32,14 @@ use ReflectionException;
 class Container extends Pimple\Container
 {
     /** @var array */
-    private $_class_names = [];
+    private $_classNames = [];
 
     /**
      * Bind a value with the class name.
      *
      * @param string $interface The class name of the value.
-     * @param string $id        The unique identifier for the parameter or object.
+     * @param string $key       The unique identifier for the parameter or
+     *                          object.
      * @param mixed  $value     The value of the parameter or a closure to
      *                          define an object.
      *
@@ -46,10 +47,10 @@ class Container extends Pimple\Container
      *
      * @throws \RuntimeException Prevent override of a frozen service.
      */
-    public function bind($interface, $id, $value)
+    public function bind($interface, $key, $value)
     {
-        $this->_class_names[$interface] = $id;
-        $this[$id] = $value;
+        $this->_classNames[$interface] = $key;
+        $this[$key] = $value;
     }
 
     /**
@@ -72,20 +73,20 @@ class Container extends Pimple\Container
                 $prop->getDocComment(),
                 $matches
             )) {
-                $prop_class = $matches[1];
+                $propClass = $matches[1];
             }
-            if (isset($this->_class_names[$prop_class])) {
-                $id = $this->_class_names[$prop_class];
+            if (isset($this->_classNames[$propClass])) {
+                $key = $this->_classNames[$propClass];
             } else {
-                $id = $prop->getName();
+                $key = $prop->getName();
                 $named = (new Annotation())->getNamed($prop);
-                if (isset($named[$id])) {
-                    $id = $named[$id];
+                if (isset($named[$key])) {
+                    $key = $named[$key];
                 }
             }
-            if (isset($this[$id])) {
+            if (isset($this[$key])) {
                 $prop->setAccessible(true);
-                $prop->setValue($obj, $this[$id]);
+                $prop->setValue($obj, $this[$key]);
             }
         }
 
@@ -110,24 +111,24 @@ class Container extends Pimple\Container
         }
         if ($method && (new Annotation())->isInjectable($method)) {
             $named = (new Annotation())->getNamed($method);
-            $i = 0;
+            $idx = 0;
             foreach ($method->getParameters() as $param) {
-                $param_class = $param->getClass();
-                if ($param_class) {
-                    $param_class = $param_class->getName();
+                $paramClass = $param->getClass();
+                if ($paramClass) {
+                    $paramClass = $paramClass->getName();
                 }
-                if (isset($this->_class_names[$param_class])) {
-                    $id = $this->_class_names[$param_class];
+                if (isset($this->_classNames[$paramClass])) {
+                    $key = $this->_classNames[$paramClass];
                 } else {
-                    $id = $param->getName();
-                    if (isset($named[$id])) {
-                        $id = $named[$id];
+                    $key = $param->getName();
+                    if (isset($named[$key])) {
+                        $key = $named[$key];
                     }
                 }
-                if (isset($this[$id])) {
-                    array_splice($args, $i, 0, [$this[$id]]);
+                if (isset($this[$key])) {
+                    array_splice($args, $idx, 0, [$this[$key]]);
                 }
-                ++$i;
+                ++$idx;
             }
         }
         $obj = $interface->newInstanceArgs($args);

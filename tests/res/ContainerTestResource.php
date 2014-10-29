@@ -1,9 +1,13 @@
 <?php
 namespace ContainerTestResource;
 
-class Config { }
+class Config
+{
+}
 
-class Momonga { }
+class Momonga
+{
+}
 
 class InjectToConstructor
 {

@@ -1,19 +1,31 @@
 <?php
 namespace AnnotationTestResource;
 
-class Momonga {
+class AnnotationTestResource
+{
+}
+
+class Momonga
+{
     /**
      * @Inject
-     * @Named("p1=prop")
+     * @Named("prop1=prop")
      */
-    public $p1;
+    public $prop1;
+
+    private $param1;
+    private $param2;
+    private $param3;
 
     /**
      * @Inject
-     * @Named('p1=param')
-     * @Named('p2=param,p3=param')
+     * @Named('param1=param')
+     * @Named('param2=param,param3=param')
      */
-    public function __construct($p)
+    public function __construct($param1, $param2, $param3)
     {
+        $this->param1 = $param1;
+        $this->param2 = $param2;
+        $this->param3 = $param3;
     }
 }

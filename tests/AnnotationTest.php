@@ -1,7 +1,7 @@
 <?php
 require_once 'tests/res/AnnotationTestResource.php';
 
-use \Ranyuen\Di\Annotation;
+use Ranyuen\Di\Annotation;
 
 class AnnotationTest extends PHPUnit_Framework_TestCase
 {
@@ -15,7 +15,7 @@ class AnnotationTest extends PHPUnit_Framework_TestCase
         parent::__construct();
         $interface = new ReflectionClass('\\AnnotationTestResource\\Momonga');
         $this->constructor = $interface->getMethod('__construct');
-        $this->property = $interface->getProperty('p1');
+        $this->property = $interface->getProperty('prop1');
     }
 
     public function testIsInjectable()
@@ -29,11 +29,11 @@ class AnnotationTest extends PHPUnit_Framework_TestCase
     {
         $annotation = new Annotation();
         $this->assertEquals(
-            ['p1' => 'param', 'p2' => 'param', 'p3' => 'param'],
+            ['param1' => 'param', 'param2' => 'param', 'param3' => 'param'],
             $annotation->getNamed($this->constructor)
         );
         $this->assertEquals(
-            ['p1' => 'prop'],
+            ['prop1' => 'prop'],
             $annotation->getNamed($this->property)
         );
     }
