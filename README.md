@@ -6,6 +6,12 @@ _cf._ [fabpot/Pimple](https://github.com/fabpot/Pimple)
 
 _cf._ [koriym/Ray.Di](https://github.com/koriym/Ray.Di)
 
+Install
+--
+```sh
+composer require ranyuen/di
+```
+
 Example
 --
 We can use this same as Pimple 3.

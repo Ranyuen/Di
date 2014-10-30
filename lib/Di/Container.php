@@ -2,16 +2,10 @@
 /**
  * Simple Ray.Di style DI (Dependency Injector) extending Pimple.
  *
- * PHP version 5
- *
- * @category  Di
- * @package   Ranyuen\Di
  * @author    Ranyuen <cal_pone@ranyuen.com>
  * @author    ne_Sachirou <utakata.c4se@gmail.com>
  * @copyright 2014-2014 Ranyuen
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
- * @version   GIT: 0.0.2
- * @link      https://github.com/Ranyuen/Di
  */
 namespace Ranyuen\Di;
 
@@ -21,18 +15,11 @@ use ReflectionException;
 
 /**
  * Service container.
- *
- * @category Di
- * @package  Ranyuen\Di
- * @author   Ranyuen <cal_pone@ranyuen.com>
- * @author   ne_Sachirou <utakata.c4se@gmail.com>
- * @license  http://www.gnu.org/copyleft/gpl.html GPL
- * @link     https://github.com/Ranyuen/Di
  */
 class Container extends Pimple\Container
 {
     /** @var array */
-    private $_classNames = [];
+    private $classNames = [];
 
     /**
      * Bind a value with the class name.
@@ -49,7 +36,7 @@ class Container extends Pimple\Container
      */
     public function bind($interface, $key, $value)
     {
-        $this->_classNames[$interface] = $key;
+        $this->classNames[$interface] = $key;
         $this[$key] = $value;
     }
 
@@ -76,8 +63,8 @@ class Container extends Pimple\Container
             )) {
                 $propClass = $matches[1];
             }
-            if ($propClass && isset($this->_classNames[$propClass])) {
-                $key = $this->_classNames[$propClass];
+            if ($propClass && isset($this->classNames[$propClass])) {
+                $key = $this->classNames[$propClass];
             } else {
                 $key = $prop->getName();
                 $named = (new Annotation())->getNamed($prop);
@@ -118,8 +105,8 @@ class Container extends Pimple\Container
                 if ($paramClass) {
                     $paramClass = $paramClass->getName();
                 }
-                if (isset($this->_classNames[$paramClass])) {
-                    $key = $this->_classNames[$paramClass];
+                if (isset($this->classNames[$paramClass])) {
+                    $key = $this->classNames[$paramClass];
                 } else {
                     $key = $param->getName();
                     if (isset($named[$key])) {
