@@ -8,7 +8,7 @@ _cf._ [koriym/Ray.Di](https://github.com/koriym/Ray.Di)
 
 Example
 --
-This can use same as Pimple 3.
+We can use this same as Pimple 3.
 
 ```php
 <?php
@@ -50,20 +50,23 @@ $container->bind('Momonga', 'momonga', function ($c) { return new Momonga; });
 class Yuraru
 {
     public $benri;
+    public $id;
 
     /** @Inject */
     public $momonga;
 
     /** @Inject */
-    public function __construct($momonga)
+    public function __construct($momonga, $id = '')
     {
         $this->benri = $momonga;
+        $this->id = $id;
     }
 }
 
-$yuraru = $container->newInstance('Yuraru');
+$yuraru = $container->newInstance('Yuraru', ['Sample ID.']);
 
 var_dump($yuraru->benri instanceof Momonga);
+var_dump($yuraru->id === 'Sample ID.');
 var_dump($yuraru->momonga instanceof Momonga);
 
 class Gardea
@@ -146,9 +149,7 @@ var_dump($musasabi->musasabi instanceof Momonga);
 ?>
 ```
 
-We can use every methods that are defined at Pimple: factory, protect, extend, raw.
-
-Below is binding example with factory.
+We can use every methods that are defined at Pimple: factory, protect, extend, raw. Below is binding example with factory.
 
 ```php
 <?php

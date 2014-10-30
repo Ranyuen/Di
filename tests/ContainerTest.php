@@ -1,7 +1,14 @@
 <?php
-require_once 'tests/res/ContainerTestResource.php';
+require_once 'tests/Fixture/Config.php';
+require_once 'tests/Fixture/InjectToConstructor.php';
+require_once 'tests/Fixture/InjectToProperties.php';
+require_once 'tests/Fixture/Momonga.php';
 
-use \Ranyuen\Di\Container;
+use Fixture\Config;
+use Fixture\InjectToConstructor;
+use Fixture\InjectToProperties;
+use Fixture\Momonga;
+use Ranyuen\Di\Container;
 
 class ContainerTest extends PHPUnit_Framework_TestCase
 {
@@ -14,13 +21,13 @@ class ContainerTest extends PHPUnit_Framework_TestCase
         parent::__construct();
         $this->_container = new Container();
         $this->_container['cfg'] = function ($c) {
-            return new ContainerTestResource\Config();
+            return new Config();
         };
         $this->_container['num'] = function ($c) { return 42; };
         $this->_container->bind(
-            'ContainerTestResource\Momonga',
+            'Fixture\Momonga',
             $this->_momonga_id, function ($c) {
-                return new ContainerTestResource\Momonga();
+                return new Momonga();
             }
         );
     }
@@ -28,7 +35,7 @@ class ContainerTest extends PHPUnit_Framework_TestCase
     public function testInjectToConstructor()
     {
         $obj = $this->_container->newInstance(
-            'ContainerTestResource\InjectToConstructor',
+            'Fixture\InjectToConstructor',
             ['arg1', 'arg2']
         );
         $this->assertEquals('arg1', $obj->arg1);
@@ -41,7 +48,7 @@ class ContainerTest extends PHPUnit_Framework_TestCase
     public function testInjectToProperties()
     {
         $obj = $this->_container->newInstance(
-            'ContainerTestResource\InjectToProperties',
+            'Fixture\InjectToProperties',
             ['arg1', 'arg2']
         );
         $this->assertEquals('arg1', $obj->arg1);

@@ -1,6 +1,7 @@
 {
     "name": "ranyuen/di",
     "description": "Simple Ray.Di style DI (Dependency Injector) extending Pimple.",
+    "version": "0.0.2",
     "license": "GPLv3",
     "authors": [
         {

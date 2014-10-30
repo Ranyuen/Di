@@ -1,9 +1,5 @@
 <?php
-namespace AnnotationTestResource;
-
-class AnnotationTestResource
-{
-}
+namespace Fixture;
 
 class Momonga
 {
@@ -22,7 +18,7 @@ class Momonga
      * @Named('param1=param')
      * @Named('param2=param,param3=param')
      */
-    public function __construct($param1, $param2, $param3)
+    public function __construct($param1 = null, $param2 = null, $param3 = null)
     {
         $this->param1 = $param1;
         $this->param2 = $param2;

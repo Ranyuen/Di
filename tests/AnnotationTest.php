@@ -1,6 +1,7 @@
 <?php
-require_once 'tests/res/AnnotationTestResource.php';
+require_once 'tests/Fixture/Momonga.php';
 
+use Fixture\Momonga;
 use Ranyuen\Di\Annotation;
 
 class AnnotationTest extends PHPUnit_Framework_TestCase
@@ -13,7 +14,7 @@ class AnnotationTest extends PHPUnit_Framework_TestCase
     public function __construct()
     {
         parent::__construct();
-        $interface = new ReflectionClass('\\AnnotationTestResource\\Momonga');
+        $interface = new ReflectionClass('Fixture\Momonga');
         $this->constructor = $interface->getMethod('__construct');
         $this->property = $interface->getProperty('prop1');
     }
