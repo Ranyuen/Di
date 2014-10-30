@@ -16,7 +16,7 @@
 namespace Ranyuen\Di;
 
 /**
- * Simple Ray.Di style DI (Dependency Injector) extending Pimple.
+ * Inject annotation.
  *
  * @category Di
  * @package  Ranyuen\Di

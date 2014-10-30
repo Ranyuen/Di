@@ -20,7 +20,7 @@ use ReflectionClass;
 use ReflectionException;
 
 /**
- * Simple Ray.Di style DI (Dependency Injector) extending Pimple.
+ * Service container.
  *
  * @category Di
  * @package  Ranyuen\Di
