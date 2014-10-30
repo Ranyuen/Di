@@ -10,7 +10,7 @@
  * @author    ne_Sachirou <utakata.c4se@gmail.com>
  * @copyright 2014-2014 Ranyuen
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
- * @version   GIT: 0.0.1
+ * @version   GIT: 0.0.2
  * @link      https://github.com/Ranyuen/Di
  */
 namespace Ranyuen\Di;

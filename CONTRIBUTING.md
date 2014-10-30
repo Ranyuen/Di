@@ -1,3 +1,3 @@
 ```sh
-make test
+make test && php README.md
 ```

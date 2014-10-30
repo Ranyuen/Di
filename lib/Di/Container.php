@@ -10,7 +10,7 @@
  * @author    ne_Sachirou <utakata.c4se@gmail.com>
  * @copyright 2014-2014 Ranyuen
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
- * @version   GIT: 0.0.1
+ * @version   GIT: 0.0.2
  * @link      https://github.com/Ranyuen/Di
  */
 namespace Ranyuen\Di;
@@ -68,6 +68,7 @@ class Container extends Pimple\Container
                 continue;
             }
             $matches = [];
+            $propClass = null;
             if (preg_match(
                 '/^\\s*(?:\\/\\*)?\\*\\s*@var\s+([a-zA-Z0-9_\\x7f-\\xff\\\\]+)/m',
                 $prop->getDocComment(),
@@ -75,7 +76,7 @@ class Container extends Pimple\Container
             )) {
                 $propClass = $matches[1];
             }
-            if (isset($this->_classNames[$propClass])) {
+            if ($propClass && isset($this->_classNames[$propClass])) {
                 $key = $this->_classNames[$propClass];
             } else {
                 $key = $prop->getName();
