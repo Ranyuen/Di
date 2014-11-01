@@ -14,6 +14,7 @@
     </rule>
     <rule ref="Generic.Formatting">
         <exclude name="Generic.Formatting.MultipleStatementAlignment"/>
+        <exclude name="Generic.Formatting.NoSpaceAfterCast.SpaceFound"/>
     </rule>
     <rule ref="Generic.Functions">
         <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie"/>
@@ -41,14 +42,19 @@
         <exclude name="PEAR.Commenting.FunctionComment.SpacingBeforeTags"/>
         <exclude name="PEAR.Commenting.FunctionComment.Missing"/>
     </rule>
-    <rule ref="PEAR.ControlStructures"/>
+    <rule ref="PEAR.ControlStructures">
+        <exclude name="PEAR.Formatting.MultiLineAssignment.Indent"/>
+    </rule>
     <rule ref="PEAR.Files"/>
     <rule ref="PEAR.Formatting"/>
     <rule ref="PEAR.Functions"/>
     <rule ref="PEAR.NamingConventions">
+        <exclude name="PEAR.NamingConventions.ValidFunctionName.PrivateNoUnderscore"/>
         <exclude name="PEAR.NamingConventions.ValidVariableName.PrivateNoUnderscore"/>
     </rule>
-    <rule ref="PEAR.WhiteSpace"/>
+    <rule ref="PEAR.WhiteSpace">
+        <exclude name="PEAR.WhiteSpace.ScopeIndent.Incorrect"/>
+    </rule>
 
     <!-- PHPCS -->
 
