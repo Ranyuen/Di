@@ -10,23 +10,23 @@ use Fixture\InjectToProperties;
 use Fixture\Momonga;
 use Ranyuen\Di\Container;
 
-class ContainerTest extends PHPUnit_Framework_TestCase
+class InjectionTest extends PHPUnit_Framework_TestCase
 {
     /** @var Container */
-    private $_container;
-    private $_momonga_id = 'iTyxdYeAnSP53tZq';
+    private $container;
+    private $momongaId = 'iTyxdYeAnSP53tZq';
 
     public function __construct()
     {
         parent::__construct();
-        $this->_container = new Container();
-        $this->_container['cfg'] = function ($c) {
+        $this->container = new Container();
+        $this->container['cfg'] = function ($c) {
             return new Config();
         };
-        $this->_container['num'] = function ($c) { return 42; };
-        $this->_container->bind(
+        $this->container['num'] = function ($c) { return 42; };
+        $this->container->bind(
             'Fixture\Momonga',
-            $this->_momonga_id, function ($c) {
+            $this->momongaId, function ($c) {
                 return new Momonga();
             }
         );
@@ -34,27 +34,27 @@ class ContainerTest extends PHPUnit_Framework_TestCase
 
     public function testInjectToConstructor()
     {
-        $obj = $this->_container->newInstance(
+        $obj = $this->container->newInstance(
             'Fixture\InjectToConstructor',
             ['arg1', 'arg2']
         );
         $this->assertEquals('arg1', $obj->arg1);
-        $this->assertSame($this->_container['cfg'], $obj->cfg);
-        $this->assertEquals($this->_container['num'], $obj->number);
+        $this->assertSame($this->container['cfg'], $obj->cfg);
+        $this->assertEquals($this->container['num'], $obj->number);
         $this->assertEquals('arg2', $obj->arg2);
-        $this->assertSame($this->_container[$this->_momonga_id], $obj->momonga);
+        $this->assertSame($this->container[$this->momongaId], $obj->momonga);
     }
 
     public function testInjectToProperties()
     {
-        $obj = $this->_container->newInstance(
+        $obj = $this->container->newInstance(
             'Fixture\InjectToProperties',
             ['arg1', 'arg2']
         );
         $this->assertEquals('arg1', $obj->arg1);
-        $this->assertSame($this->_container['cfg'], $obj->cfg);
-        $this->assertEquals($this->_container['num'], $obj->number);
+        $this->assertSame($this->container['cfg'], $obj->cfg);
+        $this->assertEquals($this->container['num'], $obj->number);
         $this->assertEquals('arg2', $obj->arg2);
-        $this->assertSame($this->_container[$this->_momonga_id], $obj->momonga);
+        $this->assertSame($this->container[$this->momongaId], $obj->momonga);
     }
 }
