@@ -6,6 +6,8 @@ use Ranyuen\Di\Annotation;
 
 class AnnotationTest extends PHPUnit_Framework_TestCase
 {
+    /** @var Fixture\Momonga */
+    private $interface;
     /** @var ReflectionMethod */
     private $constructor;
     /** @var ReflectionProperty */
@@ -14,9 +16,9 @@ class AnnotationTest extends PHPUnit_Framework_TestCase
     public function __construct()
     {
         parent::__construct();
-        $interface = new ReflectionClass('Fixture\Momonga');
-        $this->constructor = $interface->getMethod('__construct');
-        $this->property = $interface->getProperty('prop1');
+        $this->interface = new ReflectionClass('Fixture\Momonga');
+        $this->constructor = $this->interface->getMethod('__construct');
+        $this->property = $this->interface->getProperty('prop1');
     }
 
     public function testIsInjectable()
@@ -24,6 +26,11 @@ class AnnotationTest extends PHPUnit_Framework_TestCase
         $annotation = new Annotation();
         $this->assertTrue($annotation->isInjectable($this->constructor));
         $this->assertTrue($annotation->isInjectable($this->property));
+        $this->assertTrue(
+            $annotation->isInjectable(
+                $this->interface->getProperty('injectAtFirstLine')
+            )
+        );
     }
 
     public function testGetNamed()
@@ -36,6 +43,10 @@ class AnnotationTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(
             ['prop1' => 'prop'],
             $annotation->getNamed($this->property)
+        );
+        $this->assertEquals(
+            ['1st' => 'ok'],
+            $annotation->getNamed($this->interface->getProperty('namedAtFirstLine'))
         );
     }
 }

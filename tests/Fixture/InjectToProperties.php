@@ -6,11 +6,15 @@ class InjectToProperties
     /** @var string */
     public $arg1;
     /**
+     * Inject with type
+     *
      * @Inject
      * @var Fixture\Config
      */
     public $cfg;
     /**
+     * Inject with named
+     *
      * @Inject
      * @Named("number=num")
      * @var integer
@@ -19,6 +23,8 @@ class InjectToProperties
     /** @var string */
     public $arg2;
     /**
+     * Inject with name
+     *
      * @Inject
      * @var Fixture\Momonga
      */

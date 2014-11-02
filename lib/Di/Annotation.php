@@ -17,37 +17,34 @@ class Annotation
     /**
      * Does the method or property has @Inject annotation?
      *
-     * @param mixed $target ReflectionMethod|ReflectionProperty
+     * @param ReflectionMethod|ReflectionProperty $target Target.
      *
      * @return boolean
      */
     public function isInjectable($target)
     {
-        return !!preg_match(
-            '/^\\s*(?:\\/\\*)?\\*\\s*@Inject/m',
-            $target->getDocComment()
-        );
+        return !!preg_match('/^[\\s\\/*]*@Inject\W/m', $target->getDocComment());
     }
 
     /**
      * Get the values of @Named annotation.
      *
-     * @param mixed $target ReflectionMethod|ReflectionProperty
+     * @param ReflectionMethod|ReflectionProperty $target Target.
      *
      * @return array
      */
     public function getNamed($target)
     {
-        $matches = [];
         $named = [];
+        $matches = [];
         if (preg_match_all(
-            '/^\\s*(?:\\/\\*)?\\*\\s*@Named\\([\'"]([^\'"]+)[\'"]\\)/m',
+            '/^[\\s\\/*]*@Named\\([\'"]([^\'"]+)[\'"]\\)/m',
             $target->getDocComment(),
             $matches
         )) {
             foreach (explode(',', implode(',', $matches[1])) as $field) {
                 $field = explode('=', $field);
-                $named[$field[0]] = $field[1];
+                $named[trim($field[0])] = trim($field[1]);
             }
         }
 

@@ -15,13 +15,14 @@ class InjectToConstructor
     public $momonga;
 
     /**
-     * @Inject
-     * @Named("number=num")
      * @param string  $arg1
      * @param Config  $cfg
      * @param integer $number
      * @param string  $arg2
      * @param Momonga $momonga
+     *
+     * @Inject
+     * @Named("number=num")
      */
     public function __construct($arg1, Config $cfg, $number, $arg2, Momonga $momonga)
     {

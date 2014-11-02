@@ -9,6 +9,12 @@ class Momonga
      */
     public $prop1;
 
+    /** @Inject */
+    public $injectAtFirstLine;
+
+    /** @Named('1st=ok') */
+    public $namedAtFirstLine;
+
     private $param1;
     private $param2;
     private $param3;
