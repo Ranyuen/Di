@@ -89,7 +89,7 @@ class Container extends Pimple\Container
         $method = $interface->hasMethod('__construct') ?
             $interface->getMethod('__construct') :
             null;
-        if ($method && (new Annotation())->isInjectable($method)) {
+        if ($method) {
             $named = (new Annotation())->getNamed($method);
             $idx = 0;
             foreach ($method->getParameters() as $param) {

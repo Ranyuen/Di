@@ -68,7 +68,6 @@ class Yuraru
     /** @Inject */
     public $momonga;
 
-    /** @Inject */
     public function __construct($momonga, $id)
     {
         $this->benri = $momonga;
@@ -122,9 +121,6 @@ class Benri
 
     public $momonga;
 
-    /**
-     * @Inject
-     */
     public function __construct(Momonga $benri)
     {
         $this->momonga = $benri;
@@ -155,10 +151,7 @@ class Musasabi
 
     public $benri;
 
-    /**
-     * @Inject
-     * @Named('benri=momonga')
-     */
+    /** @Named('benri=momonga') */
     public function __construct($benri)
     {
         $this->benri = $benri;
