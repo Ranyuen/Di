@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Ranyuen/Di.svg)](https://travis-ci.org/Ranyuen/Di)
+
 Ranyuen/Di
 ==
 Simple Ray.Di style DI (Dependency Injector) extending Pimple.

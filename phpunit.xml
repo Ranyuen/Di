@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<phpunit colors="true"
+<phpunit bootstrap="vendor/autoload.php"
+         colors="true"
          strict="true">
     <testsuites>
         <testsuite name="test">
