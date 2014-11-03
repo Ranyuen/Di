@@ -1,23 +1,28 @@
 [![Build Status](https://travis-ci.org/Ranyuen/Di.svg)](https://travis-ci.org/Ranyuen/Di)
+[![HHVM Status](http://hhvm.h4cc.de/badge/ranyuen/di.svg)](http://hhvm.h4cc.de/package/ranyuen/di)
 
 Ranyuen/Di
 ==
-Simple Ray.Di style DI (Dependency Injector) extending Pimple.
+Annotation based, simple DI (Dependency Injector) extending Pimple.
 
-_cf._ [fabpot/Pimple](https://github.com/fabpot/Pimple)
+_cf._ [fabpot/Pimple](http://pimple.sensiolabs.org/)
 
-_cf._ [koriym/Ray.Di](https://github.com/koriym/Ray.Di)
+_cf._ [koriym/Ray.Di](https://code.google.com/p/rayphp/)
+
+_cf._ [mnapoli/PHP-DI](http://php-di.org/)
 
 Features
 --
 1. Compatible with Pimple 3.
-2. Injection through Ray.Di style _@Inject_ annotations. It's easy!
+2. Zero configuration. Injection through reflection and annotations. It's easy!
 
 Install
 --
 ```sh
 composer require ranyuen/di
 ```
+
+Support PHP >=5.4 and latest HHVM.
 
 Example
 --
