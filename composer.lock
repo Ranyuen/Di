@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "df41683299b364c32d9dc5ae6e81baf6",
+    "hash": "157f214115c8d5b6bfcb98e58f5e0376",
     "packages": [
         {
             "name": "pimple/pimple",
@@ -114,12 +114,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/PHP-CS-Fixer.git",
-                "reference": "c21e2675393df0f8241c02c822ce56e524999ed2"
+                "reference": "ff8ec52e658829b9400f874fe61acf9553088867"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/PHP-CS-Fixer/zipball/c21e2675393df0f8241c02c822ce56e524999ed2",
-                "reference": "c21e2675393df0f8241c02c822ce56e524999ed2",
+                "url": "https://api.github.com/repos/fabpot/PHP-CS-Fixer/zipball/ff8ec52e658829b9400f874fe61acf9553088867",
+                "reference": "ff8ec52e658829b9400f874fe61acf9553088867",
                 "shasum": ""
             },
             "require": {
@@ -157,7 +157,7 @@
                 }
             ],
             "description": "A script to automatically fix Symfony Coding Standard",
-            "time": "2014-11-02 20:52:20"
+            "time": "2014-11-03 06:18:03"
         },
         {
             "name": "pdepend/pdepend",
@@ -1485,7 +1485,5 @@
     "platform": {
         "php": ">=5.4.0"
     },
-    "platform-dev": {
-        "ext-xdebug": ">=2.2.5"
-    }
+    "platform-dev": []
 }

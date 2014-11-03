@@ -18,7 +18,6 @@
         "pimple/pimple": "~3.0"
     },
     "require-dev": {
-        "ext-xdebug": ">=2.2.5",
         "phpunit/phpunit": "~4.3",
         "fabpot/php-cs-fixer": "~1.0@dev",
         "phpmd/phpmd": "~2.1",
