@@ -58,7 +58,7 @@ class Container extends Pimple\Container
         } catch (ReflectionException $ex) {
             return $obj;
         }
-        foreach ($interface->getProperties(ReflectionProperty::IS_PUBLIC) as $prop) {
+        foreach ($interface->getProperties() as $prop) {
             if (!(new Annotation())->isInjectable($prop)) {
                 continue;
             }
