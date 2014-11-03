@@ -1,6 +1,6 @@
 <?php
 /**
- * Simple Ray.Di style DI (Dependency Injector) extending Pimple.
+ * Annotation based, simple DI (Dependency Injector) extending Pimple.
  *
  * @author    Ranyuen <cal_pone@ranyuen.com>
  * @author    ne_Sachirou <utakata.c4se@gmail.com>
@@ -8,6 +8,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
  */
 namespace Ranyuen\Di;
+
+use ReflectionParameter;
 
 /**
  * Inject annotation.
@@ -23,7 +25,7 @@ class Annotation
      */
     public function isInjectable($target)
     {
-        return !!preg_match('/^[\\s\\/*]*@Inject\W/m', $target->getDocComment());
+        return !!preg_match('/^[\\s\\/*]*@Inject\\W/m', $target->getDocComment());
     }
 
     /**
@@ -49,5 +51,64 @@ class Annotation
         }
 
         return $named;
+    }
+
+    /**
+     * Get type name from type hinting or @var, @param annotation.
+     *
+     * @param ReflectionProperty|ReflectionParameter $target Target.
+     *
+     * @return string|null
+     */
+    public function getType($target)
+    {
+        if ($target instanceof ReflectionParameter) {
+            return $this->getTypeOfParameter($target);
+        }
+
+        return $this->getTypeOfProperty($target);
+    }
+
+    /**
+     * @param ReflectionProperty $prop Target property.
+     *
+     * @return string|null
+     */
+    private function getTypeOfProperty($prop)
+    {
+        $matches = [];
+        if (preg_match(
+            '/^[\\s\\/*]*@var\\s+([a-zA-Z0-9_\\x7f-\\xff\\\\]+)/m',
+            $prop->getDocComment(),
+            $matches
+        )) {
+            return $matches[1];
+        }
+
+        return null;
+    }
+
+    /**
+     * @param ReflectionParameter $param Target parameter.
+     *
+     * @return string|null
+     */
+    private function getTypeOfParameter($param)
+    {
+        $class = $param->getClass();
+        if ($class) {
+            return $class->getName();
+        }
+        $paramName = $param->getName();
+        $matches = [];
+        if (preg_match(
+            "/^[\\s\\/*]*@param\\s+([a-zA-Z0-9_\\x7f-\\xff\\\\]+)\\s+\\$$paramName\\W/m",
+            $param->getDeclaringFunction()->getDocComment(),
+            $matches
+        )) {
+            return $matches[1];
+        }
+
+        return null;
     }
 }

@@ -4,6 +4,8 @@ namespace Fixture;
 class Momonga
 {
     /**
+     * @var Fixture\Momonga
+     *
      * @Inject
      * @Named("prop1=prop")
      */
@@ -20,11 +22,13 @@ class Momonga
     private $param3;
 
     /**
+     * @param Fixture\Momonga $param2
+     *
      * @Inject
      * @Named('param1=param')
      * @Named('param2=param,param3=param')
      */
-    public function __construct($param1 = null, $param2 = null, $param3 = null)
+    public function __construct(Momonga $param1 = null, $param2 = null, $param3 = null)
     {
         $this->param1 = $param1;
         $this->param2 = $param2;

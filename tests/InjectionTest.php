@@ -57,4 +57,9 @@ class InjectionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('arg2', $obj->arg2);
         $this->assertSame($this->container[$this->momongaId], $obj->momonga);
     }
+
+    public function testInjectToNonObject()
+    {
+        $this->assertEquals(42, $this->container->inject(42));
+    }
 }

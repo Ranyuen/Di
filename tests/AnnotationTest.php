@@ -49,4 +49,20 @@ class AnnotationTest extends PHPUnit_Framework_TestCase
             $annotation->getNamed($this->interface->getProperty('namedAtFirstLine'))
         );
     }
+
+    public function testGetTypeOfProperty()
+    {
+        $annotation = new Annotation();
+        $this->assertEquals('Fixture\Momonga', $annotation->getType($this->property));
+        $this->assertNull($annotation->getType($this->interface->getProperty('injectAtFirstLine')));
+    }
+
+    public function testGetTypeOfParameter()
+    {
+        $annotation = new Annotation();
+        $params = $this->constructor->getParameters();
+        $this->assertEquals('Fixture\Momonga', $annotation->getType($params[0]));
+        $this->assertEquals('Fixture\Momonga', $annotation->getType($params[1]));
+        $this->assertNull($annotation->getType($params[2]));
+    }
 }

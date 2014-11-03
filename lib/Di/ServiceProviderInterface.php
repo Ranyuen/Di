@@ -1,6 +1,6 @@
 <?php
 /**
- * Simple Ray.Di style DI (Dependency Injector) extending Pimple.
+ * Annotation based, simple DI (Dependency Injector) extending Pimple.
  *
  * @author    Ranyuen <cal_pone@ranyuen.com>
  * @author    ne_Sachirou <utakata.c4se@gmail.com>

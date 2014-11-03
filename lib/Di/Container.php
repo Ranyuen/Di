@@ -1,6 +1,6 @@
 <?php
 /**
- * Simple Ray.Di style DI (Dependency Injector) extending Pimple.
+ * Annotation based, simple DI (Dependency Injector) extending Pimple.
  *
  * @author    Ranyuen <cal_pone@ranyuen.com>
  * @author    ne_Sachirou <utakata.c4se@gmail.com>
@@ -12,7 +12,6 @@ namespace Ranyuen\Di;
 use Pimple;
 use ReflectionClass;
 use ReflectionException;
-use ReflectionParameter;
 use ReflectionProperty;
 
 /**
@@ -121,36 +120,12 @@ class Container extends Pimple\Container
         if (isset($named[$key])) {
             $key = $named[$key];
         } else {
-            $className = $this->getClassName($obj);
-            if (isset($this->classNames[$className])) {
-                $key = $this->classNames[$className];
+            $type = (new Annotation())->getType($obj);
+            if (isset($this->classNames[$type])) {
+                $key = $this->classNames[$type];
             }
         }
 
         return $key;
-    }
-
-    /**
-     * @param ReflectionParameter|ReflectionProperty $obj Target.
-     *
-     * @return string|null
-     */
-    private function getClassName($obj)
-    {
-        if ($obj instanceof ReflectionParameter) {
-            $class = $obj->getClass();
-
-            return $class ? $class->getName() : null;
-        }
-        $matches = [];
-        if (preg_match(
-            '/^[\\s\\/*]*@var\s+([a-zA-Z0-9_\\x7f-\\xff\\\\]+)/m',
-            $obj->getDocComment(),
-            $matches
-        )) {
-            return $matches[1];
-        }
-
-        return null;
     }
 }
