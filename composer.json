@@ -1,6 +1,6 @@
 {
     "name": "ranyuen/di",
-    "description": "Simple Ray.Di style DI (Dependency Injector) extending Pimple.",
+    "description": "Annotation based, simple DI (Dependency Injector) extending Pimple.",
     "keywords": [
       "DI"
     ],
@@ -15,14 +15,15 @@
     "minimum-stability": "stable",
     "require": {
         "php": ">=5.4.0",
-        "hhvm": ">=2.4.2",
         "pimple/pimple": "~3.0"
     },
     "require-dev": {
+        "ext-xdebug": ">=2.2.5",
         "phpunit/phpunit": "~4.3",
         "fabpot/php-cs-fixer": "~1.0@dev",
         "phpmd/phpmd": "~2.1",
-        "squizlabs/php_codesniffer": "~1.5"
+        "squizlabs/php_codesniffer": "~1.5",
+        "phing/phing": "~2.8"
     },
     "autoload": {
         "psr-4": {"Ranyuen\\": "lib/"}

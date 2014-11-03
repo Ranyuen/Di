@@ -4,7 +4,7 @@ CONTRIBUTING
 Before commit, push or pull request.
 --
 ```sh
-make test && php README.md
+vendor/bin/phing test && php README.md
 ```
 
 Start developing.
@@ -12,9 +12,8 @@ Start developing.
 We need:
 
 1. Git :) and clone this repo.
-2. PHP >=5.3
-3. make (`apt-get install make`)
-4. [composer](https://getcomposer.org/) and `composer install`.
+2. PHP >=5.4 or latest HHVM.
+3. [composer](https://getcomposer.org/) and `composer install`.
 
 You may have:
 
