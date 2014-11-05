@@ -92,9 +92,13 @@ class Container extends Pimple\Container
             $named = (new Annotation())->getNamed($method);
             $idx = 0;
             foreach ($method->getParameters() as $param) {
-                $key = $this->detectKey($param, $named);
-                if (isset($this[$key])) {
-                    array_splice($args, $idx, 0, [$this[$key]]);
+                if (isset($args[$param->getName()])) {
+                    array_splice($args, $idx, 0, [$args[$param->getName()]]);
+                } else {
+                    $key = $this->detectKey($param, $named);
+                    if (isset($this[$key])) {
+                        array_splice($args, $idx, 0, [$this[$key]]);
+                    }
                 }
                 ++$idx;
             }
