@@ -52,7 +52,7 @@ class Container extends Pimple\Container
         }
         $interface = new \ReflectionClass(get_class($obj)); // This must not fail.
         foreach ($interface->getProperties() as $prop) {
-            if (!(new Annotation())->isInjectable($prop)) {
+            if (!(new Annotation\Inject())->isInjectable($prop)) {
                 continue;
             }
             $key = $this->detectKey($prop);
@@ -111,20 +111,19 @@ class Container extends Pimple\Container
      */
     private function detectKey($obj)
     {
-        $annotation = new Annotation();
         $key = $obj->getName();
         if ($obj instanceof \ReflectionProperty) {
-            if ($injectName = $annotation->getInject($obj)) {
+            if ($injectName = (new Annotation\Inject())->getInject($obj)) {
                 $named = [$key => $injectName];
             } else {
-                $named = $annotation->getNamed($obj);
+                $named = (new Annotation\Named())->getNamed($obj);
             }
         } else {
-            $named = $annotation->getNamed($obj->getDeclaringFunction());
+            $named = (new Annotation\Named())->getNamed($obj->getDeclaringFunction());
         }
         if (isset($named[$key])) {
             $key = $named[$key];
-        } elseif (isset($this->classes[$type = $annotation->getType($obj)])) {
+        } elseif (isset($this->classes[$type = (new Reflection\Type())->getType($obj)])) {
             $key = $this->classes[$type];
         }
 

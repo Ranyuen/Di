@@ -7,67 +7,15 @@
  * @copyright 2014-2014 Ranyuen
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
  */
-namespace Ranyuen\Di;
+namespace Ranyuen\Di\Reflection;
 
 use Doctrine\Common\Annotations\PhpParser;
 
 /**
- * Inject annotation.
+ * Type reflection tools.
  */
-class Annotation
+class Type
 {
-    /**
-     * Does the method or property has @Inject annotation?
-     *
-     * @param \ReflectionMethod|\ReflectionProperty $target Target.
-     *
-     * @return boolean
-     */
-    public function isInjectable($target)
-    {
-        return !!preg_match('/^[\\s\\/*]*@Inject\\W/m', $target->getDocComment());
-    }
-
-    /**
-     * Get @Inject value.
-     *
-     * @param \ReflectionProperty $target Target.
-     *
-     * @return string|null
-     */
-    public function getInject($target)
-    {
-        if (!preg_match('/^[\\s\\/*]*@Inject\\([\'"]([^\'"]+)[\'"]\\)/m', $target->getDocComment(), $matches)) {
-            return null;
-        }
-
-        return $matches[1];
-    }
-
-    /**
-     * Get the values of @Named annotation.
-     *
-     * @param \ReflectionMethod|\ReflectionProperty $target Target.
-     *
-     * @return array
-     */
-    public function getNamed($target)
-    {
-        $named = [];
-        if (preg_match_all(
-            '/^[\\s\\/*]*@Named\\([\'"]([^\'"]+)[\'"]\\)/m',
-            $target->getDocComment(),
-            $matches
-        )) {
-            foreach (explode(',', implode(',', $matches[1])) as $field) {
-                $field = explode('=', $field);
-                $named[trim($field[0])] = trim($field[1]);
-            }
-        }
-
-        return $named;
-    }
-
     /**
      * Get type name from type hinting or @var, @param annotation.
      *
@@ -140,7 +88,7 @@ class Annotation
      *
      * @return string|null
      */
-    private function getFullNameOfType($type, $class)
+    public function getFullNameOfType($type, $class)
     {
         $reserved = [
             'string',
