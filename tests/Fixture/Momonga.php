@@ -4,7 +4,7 @@ namespace Fixture;
 class Momonga
 {
     /**
-     * @var Fixture\Momonga
+     * @var Momonga
      *
      * @Inject
      * @Named("prop1=prop")

@@ -9,6 +9,8 @@
  */
 namespace Ranyuen\Di;
 
+use Doctrine\Common\Annotations\PhpParser;
+
 /**
  * Inject annotation.
  */
@@ -90,11 +92,14 @@ class Annotation
     private function getTypeOfProperty($prop)
     {
         if (preg_match(
-            '/^[\\s\\/*]*@var\\s+([a-zA-Z0-9_\\x7f-\\xff\\\\]+)/m',
+            '/^[\\s\\/*]*@var\\s+(\S+)/m',
             $prop->getDocComment(),
             $matches
         )) {
-            return $matches[1];
+            return $this->getFullNameOfType(
+                $matches[1],
+                $prop->getDeclaringClass()
+            );
         }
 
         return null;
@@ -107,19 +112,83 @@ class Annotation
      */
     private function getTypeOfParameter($param)
     {
-        $class = $param->getClass();
-        if ($class) {
+        if ($class = $param->getClass()) {
             return $class->getName();
         }
         $paramName = $param->getName();
         if (preg_match(
-            "/^[\\s\\/*]*@param\\s+([a-zA-Z0-9_\\x7f-\\xff\\\\]+)\\s+\\$$paramName\\W/m",
+            "/^[\\s\\/*]*@param\\s+(\S+)\\s+\\$$paramName\\W/m",
             $param->getDeclaringFunction()->getDocComment(),
             $matches
         )) {
-            return $matches[1];
+            return $this->getFullNameOfType(
+                $matches[1],
+                $param->getDeclaringFunction()->getDeclaringClass()
+            );
         }
 
         return null;
+    }
+
+    /**
+     * Get Full name of the type.
+     *
+     * https://github.com/mnapoli/PhpDocReader
+     *
+     * @param string           $type  Short type name.
+     * @param \ReflectionClass $class Declared class.
+     *
+     * @return string|null
+     */
+    private function getFullNameOfType($type, $class)
+    {
+        $reserved = [
+            'string',
+            'int',
+            'integer',
+            'float',
+            'bool',
+            'boolean',
+            'array',
+            'resource',
+            'null',
+            'callable',
+            'mixed',
+            'void',
+            'object',
+            'false',
+            'true',
+            'self',
+            'static',
+            '$this',
+        ];
+        if (in_array($type, $reserved)
+            || !preg_match('/^[a-zA-Z0-9_\\x7f-\\xff\\\\]+$/', $type)
+        ) {
+            return null;
+        }
+        if ('\\' !== $type[0]) {
+            $uses = (new PhpParser())->parseClass($class);
+            $alias = strtolower(explode('\\', $type)[0]);
+            if (isset($uses[$alias])) {
+                $type = $uses[$alias].preg_replace('/^[^\\\\]+/', '', $type);
+            } elseif ($this->isTypeExists("{$class->getNamespaceName()}\\$type")) {
+                $type = "{$class->getNamespaceName()}\\$type";
+            } elseif (isset($uses['__NAMESPACE__']) && $this->isTypeExists("{$uses['__NAMESPACE__']}\\$type")) {
+                $type = "{$uses['__NAMESPACE__']}\\$type";
+            }
+        }
+
+        return ltrim($type, '\\');
+    }
+
+    /**
+     * @param string $type Class or interface name.
+     *
+     * @return boolean
+     */
+    private function isTypeExists($type)
+    {
+        return class_exists($type) || interface_exists($type);
     }
 }

@@ -76,4 +76,26 @@ class AnnotationTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Fixture\Momonga', $annotation->getType($params[1]));
         $this->assertNull($annotation->getType($params[2]));
     }
+
+    public function testGetFullNameOfType()
+    {
+        $annotation = new Annotation();
+        $method = new ReflectionMethod('Ranyuen\Di\Annotation', 'getFullNameOfType');
+        $method->setAccessible(true);
+        $class = new ReflectionClass('AnnotationTest');
+        $this->assertNull($method->invokeArgs($annotation, ['string', $class]));
+        $this->assertNull($method->invokeArgs($annotation, ['a|b[]', $class]));
+        $this->assertEquals(
+            'F',
+            $method->invokeArgs($annotation, ['\\F', $class])
+        );
+        $this->assertEquals(
+            'Fixture\Momonga',
+            $method->invokeArgs($annotation, ['Momonga', $class])
+        );
+        $this->assertEquals(
+            'Fixture\Momonga',
+            $method->invokeArgs($annotation, ['Fixture\Momonga', $class])
+        );
+    }
 }

@@ -9,7 +9,7 @@ class InjectToProperties
      * Inject with type
      *
      * @Inject
-     * @var Fixture\Config
+     * @var Config
      */
     public $cfg;
     /**
@@ -32,7 +32,7 @@ class InjectToProperties
      * Inject with name
      *
      * @Inject
-     * @var Fixture\Momonga
+     * @var Momonga
      */
     public $momonga;
 
