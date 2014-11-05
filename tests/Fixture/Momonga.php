@@ -11,7 +11,7 @@ class Momonga
      */
     public $prop1;
 
-    /** @Inject */
+    /** @Inject('1st') */
     public $injectAtFirstLine;
 
     /** @Named('1st=ok') */

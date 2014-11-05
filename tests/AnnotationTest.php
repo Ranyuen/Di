@@ -33,6 +33,17 @@ class AnnotationTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testGetInject()
+    {
+        $annotation = new Annotation();
+        $this->assertEquals(
+            '1st',
+            $annotation->getInject(
+                $this->interface->getProperty('injectAtFirstLine')
+            )
+        );
+    }
+
     public function testGetNamed()
     {
         $annotation = new Annotation();

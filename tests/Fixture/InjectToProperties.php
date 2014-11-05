@@ -20,6 +20,12 @@ class InjectToProperties
      * @var integer
      */
     public $number;
+    /**
+     * Inject with @Inject name
+     *
+     * @Inject("num")
+     */
+    public $number2;
     /** @var string */
     public $arg2;
     /**

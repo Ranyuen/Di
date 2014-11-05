@@ -29,6 +29,22 @@ class Annotation
     }
 
     /**
+     * Get @Inject value.
+     *
+     * @param ReflectionProperty $target Target.
+     *
+     * @return string|null
+     */
+    public function getInject($target)
+    {
+        if (!preg_match('/^[\\s\\/*]*@Inject\\([\'"]([^\'"]+)[\'"]\\)/m', $target->getDocComment(), $matches)) {
+            return null;
+        }
+
+        return $matches[1];
+    }
+
+    /**
      * Get the values of @Named annotation.
      *
      * @param ReflectionMethod|ReflectionProperty $target Target.
@@ -38,7 +54,6 @@ class Annotation
     public function getNamed($target)
     {
         $named = [];
-        $matches = [];
         if (preg_match_all(
             '/^[\\s\\/*]*@Named\\([\'"]([^\'"]+)[\'"]\\)/m',
             $target->getDocComment(),
@@ -76,7 +91,6 @@ class Annotation
      */
     private function getTypeOfProperty($prop)
     {
-        $matches = [];
         if (preg_match(
             '/^[\\s\\/*]*@var\\s+([a-zA-Z0-9_\\x7f-\\xff\\\\]+)/m',
             $prop->getDocComment(),
@@ -100,7 +114,6 @@ class Annotation
             return $class->getName();
         }
         $paramName = $param->getName();
-        $matches = [];
         if (preg_match(
             "/^[\\s\\/*]*@param\\s+([a-zA-Z0-9_\\x7f-\\xff\\\\]+)\\s+\\$$paramName\\W/m",
             $param->getDeclaringFunction()->getDocComment(),

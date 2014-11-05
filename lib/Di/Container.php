@@ -114,13 +114,18 @@ class Container extends Pimple\Container
     private function detectKey($obj, $named = [])
     {
         $key = $obj->getName();
+        $annotation = new Annotation();
         if ($obj instanceof ReflectionProperty) {
-            $named = (new Annotation())->getNamed($obj);
+            $injectName = $annotation->getInject($obj);
+            if ($injectName) {
+                return $injectName;
+            }
+            $named = $annotation->getNamed($obj);
         }
         if (isset($named[$key])) {
             $key = $named[$key];
         } else {
-            $type = (new Annotation())->getType($obj);
+            $type = $annotation->getType($obj);
             if (isset($this->classNames[$type])) {
                 $key = $this->classNames[$type];
             }

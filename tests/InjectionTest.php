@@ -54,6 +54,7 @@ class InjectionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('arg1', $obj->arg1);
         $this->assertSame($this->container['cfg'], $obj->cfg);
         $this->assertEquals($this->container['num'], $obj->number);
+        $this->assertEquals($this->container['num'], $obj->number2);
         $this->assertEquals('arg2', $obj->arg2);
         $this->assertSame($this->container[$this->momongaId], $obj->momonga);
     }
