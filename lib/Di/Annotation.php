@@ -9,8 +9,6 @@
  */
 namespace Ranyuen\Di;
 
-use ReflectionParameter;
-
 /**
  * Inject annotation.
  */
@@ -19,7 +17,7 @@ class Annotation
     /**
      * Does the method or property has @Inject annotation?
      *
-     * @param ReflectionMethod|ReflectionProperty $target Target.
+     * @param \ReflectionMethod|\ReflectionProperty $target Target.
      *
      * @return boolean
      */
@@ -31,7 +29,7 @@ class Annotation
     /**
      * Get @Inject value.
      *
-     * @param ReflectionProperty $target Target.
+     * @param \ReflectionProperty $target Target.
      *
      * @return string|null
      */
@@ -47,7 +45,7 @@ class Annotation
     /**
      * Get the values of @Named annotation.
      *
-     * @param ReflectionMethod|ReflectionProperty $target Target.
+     * @param \ReflectionMethod|\ReflectionProperty $target Target.
      *
      * @return array
      */
@@ -71,13 +69,13 @@ class Annotation
     /**
      * Get type name from type hinting or @var, @param annotation.
      *
-     * @param ReflectionProperty|ReflectionParameter $target Target.
+     * @param \ReflectionProperty|\ReflectionParameter $target Target.
      *
      * @return string|null
      */
     public function getType($target)
     {
-        if ($target instanceof ReflectionParameter) {
+        if ($target instanceof \ReflectionParameter) {
             return $this->getTypeOfParameter($target);
         }
 
@@ -85,7 +83,7 @@ class Annotation
     }
 
     /**
-     * @param ReflectionProperty $prop Target property.
+     * @param \ReflectionProperty $prop Target property.
      *
      * @return string|null
      */
@@ -103,7 +101,7 @@ class Annotation
     }
 
     /**
-     * @param ReflectionParameter $param Target parameter.
+     * @param \ReflectionParameter $param Target parameter.
      *
      * @return string|null
      */

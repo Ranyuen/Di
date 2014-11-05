@@ -10,9 +10,6 @@
 namespace Ranyuen\Di;
 
 use Pimple;
-use ReflectionClass;
-use ReflectionException;
-use ReflectionProperty;
 
 /**
  * Service container.
@@ -20,7 +17,7 @@ use ReflectionProperty;
 class Container extends Pimple\Container
 {
     /** @var array */
-    private $classNames = [];
+    private $classes = [];
 
     /**
      * Bind a value with the class name.
@@ -33,12 +30,12 @@ class Container extends Pimple\Container
      *
      * @return void
      *
-     * @throws RuntimeException Prevent override of a frozen service.
+     * @throws \RuntimeException Prevent override of a frozen service.
      */
     public function bind($interface, $key, $value)
     {
         $this[$key] = $value;
-        $this->classNames[$interface] = $key;
+        $this->classes[$interface] = $key;
     }
 
     /**
@@ -53,11 +50,7 @@ class Container extends Pimple\Container
         if (!is_object($obj)) {
             return $obj;
         }
-        try {
-            $interface = new ReflectionClass(get_class($obj));
-        } catch (ReflectionException $ex) {
-            return $obj;
-        }
+        $interface = new \ReflectionClass(get_class($obj)); // This must not fail.
         foreach ($interface->getProperties() as $prop) {
             if (!(new Annotation())->isInjectable($prop)) {
                 continue;
@@ -75,64 +68,64 @@ class Container extends Pimple\Container
     /**
      * Create a new instance and injection.
      *
-     * @param string $interface Create an instance.
-     * @param array  $args      Arguments which doesn't inject.
+     * @param string $class Create an instance.
+     * @param array  $args  Arguments which doesn't inject.
      *
      * @return object
      *
-     * @throws ReflectionException The class doesn't exist.
+     * @throws \ReflectionException The class doesn't exist.
      */
-    public function newInstance($interface, $args = [])
+    public function newInstance($class, $args = [])
     {
-        $interface = new ReflectionClass($interface);
-        $method = $interface->hasMethod('__construct') ?
-            $interface->getMethod('__construct') :
+        $class = new \ReflectionClass($class);
+        $method = $class->hasMethod('__construct') ?
+            $class->getMethod('__construct') :
             null;
         if ($method) {
-            $named = (new Annotation())->getNamed($method);
-            $idx = 0;
-            foreach ($method->getParameters() as $param) {
-                if (isset($args[$param->getName()])) {
-                    array_splice($args, $idx, 0, [$args[$param->getName()]]);
-                } else {
-                    $key = $this->detectKey($param, $named);
-                    if (isset($this[$key])) {
-                        array_splice($args, $idx, 0, [$this[$key]]);
-                    }
+            foreach ($method->getParameters() as $i => $param) {
+                if (isset($args[$key = $param->getName()])) {
+                    array_splice($args, $i, 0, [$args[$key]]);
+                } elseif (isset($this[$key = $this->detectKey($param)])) {
+                    array_splice($args, $i, 0, [$this[$key]]);
                 }
-                ++$idx;
             }
         }
-        $obj = $interface->newInstanceArgs($args);
+        $obj = $class->newInstanceArgs($args);
         $this->inject($obj);
 
         return $obj;
     }
 
     /**
-     * @param ReflectionParameter|ReflectionProperty $obj   Target.
-     * @param array                                  $named Named of __construct.
+     * Detect what key to get the value.
+     *
+     * Priority.
+     * 1. Inject with name annotation.
+     * 2. Named annotation.
+     * 3. Type hinting and type of var annotation.
+     * 4. Variable name.
+     *
+     * @param \ReflectionParameter|\ReflectionProperty $obj Target.
      *
      * @return string
      */
-    private function detectKey($obj, $named = [])
+    private function detectKey($obj)
     {
-        $key = $obj->getName();
         $annotation = new Annotation();
-        if ($obj instanceof ReflectionProperty) {
-            $injectName = $annotation->getInject($obj);
-            if ($injectName) {
-                return $injectName;
+        $key = $obj->getName();
+        if ($obj instanceof \ReflectionProperty) {
+            if ($injectName = $annotation->getInject($obj)) {
+                $named = [$key => $injectName];
+            } else {
+                $named = $annotation->getNamed($obj);
             }
-            $named = $annotation->getNamed($obj);
+        } else {
+            $named = $annotation->getNamed($obj->getDeclaringFunction());
         }
         if (isset($named[$key])) {
             $key = $named[$key];
-        } else {
-            $type = $annotation->getType($obj);
-            if (isset($this->classNames[$type])) {
-                $key = $this->classNames[$type];
-            }
+        } elseif (isset($this->classes[$type = $annotation->getType($obj)])) {
+            $key = $this->classes[$type];
         }
 
         return $key;
