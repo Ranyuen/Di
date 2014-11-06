@@ -3,11 +3,11 @@
     <target name="test">
         <apply executable="php" checkreturn="true">
             <arg value="-l"/>
-            <fileset dir="lib/" includes="**/*.php"/>
-        </apply>
-        <apply executable="php" checkreturn="true">
-            <arg value="-l"/>
-            <fileset dir="tests/" includes="**/*.php"/>
+            <fileset dir=".">
+                <include name="lib/**/*.php"/>
+                <include name="res/**/*.php"/>
+                <include name="tests/**/*.php"/>
+            </fileset>
         </apply>
         <exec executable="vendor/bin/php-cs-fixer" passthru="true" checkreturn="true">
             <arg value="fix"/>

@@ -17,7 +17,12 @@ use Pimple;
 class Container extends Pimple\Container
 {
     /** @var array */
+    public static $interceptors = [];
+
+    /** @var array */
     private $classes = [];
+    /** @var array */
+    private $wraps = [];
 
     /**
      * Bind a value with the class name.
@@ -36,6 +41,48 @@ class Container extends Pimple\Container
     {
         $this[$key] = $value;
         $this->classes[$interface] = $key;
+    }
+
+    /**
+     * AOP.
+     *
+     * @param string   $interface   Class name.
+     * @param mixed[]  $matchers    Pointcut.
+     * @param callable $interceptor Advice. function(callable $invocation, array $args)
+     *
+     * @return void
+     *
+     * @throws \ReflectionException The class doesn't exist.
+     *
+     * @SuppressWarnings(PHPMD.EvalExpression)
+     * @SuppressWarnings(PHPMD.StaticAccess)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function wrap($interface, $matchers, callable $interceptor)
+    {
+        $uniqid = uniqid();
+        self::$interceptors[$uniqid] = $interceptor;
+        if (isset($this->wraps[$interface])) {
+            $parent = $this->wraps[$interface];
+            $this->wraps[$interface] = "Tmp$uniqid";
+            $interface = $parent;
+        } else {
+            $this->wraps[$interface] = "Tmp$uniqid";
+        }
+        $interface = new \ReflectionClass($interface);
+        $render = function () use ($interface, $matchers, $uniqid) {
+            ob_start();
+            eval('?>'.func_get_arg(0));
+
+            return ob_get_clean();
+        };
+        $render = $render->bindTo(null);
+        $wrappedClass = $render(file_get_contents('res/WrappedClass.php'));
+        $dir = sys_get_temp_dir();
+        $file = fopen("$dir/$uniqid", 'w');
+        fwrite($file, $wrappedClass);
+        include_once "$dir/$uniqid";
+        fclose($file);
     }
 
     /**
@@ -77,6 +124,9 @@ class Container extends Pimple\Container
      */
     public function newInstance($class, $args = [])
     {
+        if (isset($this->wraps[$class])) {
+            $class = $this->wraps[$class];
+        }
         $class = new \ReflectionClass($class);
         $method = $class->hasMethod('__construct') ?
             $class->getMethod('__construct') :
