@@ -78,10 +78,7 @@ class Tmp<?php echo $uniqid; ?>
     ) {
         $interceptor = \Ranyuen\Di\Container::$interceptors['<?php echo $uniqid; ?>'];
         $invocation = function () {
-            $parent = new \ReflectionClass('<?php echo $interface->getName(); ?>');
-            $method = $parent->getMethod('<?php echo $name; ?>');
-
-            return $method->invokeArgs($this, func_get_args());
+            return call_user_func_array('parent::<?php echo $name; ?>', func_get_args());
         };
         $args = [<?php echo $paramNames; ?>];
 
