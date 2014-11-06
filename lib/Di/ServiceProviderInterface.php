@@ -1,6 +1,6 @@
 <?php
 /**
- * Annotation based, simple DI (Dependency Injector) extending Pimple.
+ * Annotation based simple DI (Dependency Injection) & AOP (Aspect Oriented Programming).
  *
  * @author    Ranyuen <cal_pone@ranyuen.com>
  * @author    ne_Sachirou <utakata.c4se@gmail.com>

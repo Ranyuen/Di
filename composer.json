@@ -1,10 +1,10 @@
 {
     "name": "ranyuen/di",
-    "description": "Annotation based, simple DI (Dependency Injector) extending Pimple.",
+    "description": "Annotation based simple DI (Dependency Injection) & AOP (Aspect Oriented Programming).",
     "keywords": [
       "DI"
     ],
-    "version": "0.2.0",
+    "version": "0.1.0",
     "license": "GPLv3",
     "authors": [
         {
@@ -27,8 +27,5 @@
     },
     "autoload": {
         "psr-4": {"Ranyuen\\": "lib/"}
-    },
-    "config": {
-        "github-protocols": ["https","git","ssh"]
     }
 }

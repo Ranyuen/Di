@@ -3,11 +3,11 @@
 
 Ranyuen/Di
 ==
-Annotation based, simple DI (Dependency Injector) extending Pimple.
+Annotation based simple DI (Dependency Injection) & AOP (Aspect Oriented Programming).
 
 _cf._ [fabpot/Pimple](http://pimple.sensiolabs.org/)
 
-_cf._ [koriym/Ray.Di](https://code.google.com/p/rayphp/)
+_cf._ [koriym/Ray.Di & Ray.Aop](https://code.google.com/p/rayphp/)
 
 _cf._ [mnapoli/PHP-DI](http://php-di.org/)
 
@@ -15,6 +15,7 @@ Features
 --
 1. Compatible with Pimple 3.
 2. Zero configuration. Injection through reflection and annotations. It's easy!
+3. AOP support.
 
 Install
 --
@@ -24,9 +25,9 @@ composer require ranyuen/di
 
 Support PHP >=5.4 and latest HHVM.
 
-Example
+DI Example
 --
-We can use Ranyuen/Di same as Pimple 3.
+Ranyuen/Di just extends Pimple. So we can use this same as Pimple 3.
 
 ```php
 <?php
@@ -58,7 +59,7 @@ var_dump($container['factory'] !== $container['factory']);
 ?>
 ```
 
-Basic _@Inject_ annotations example. Inject to constructor & properties.
+Basic Ray.Di and PHP-DI style _@Inject_ annotations example. Inject to constructor & properties.
 
 ```php
 <?php
@@ -195,5 +196,40 @@ var_dump($momonga->momonga instanceof Momonga);
 var_dump($momonga->momonga === $container['momonga']);
 var_dump($momonga->factory instanceof Momonga);
 var_dump($momonga->factory !== $container['factory']);
+?>
+```
+
+AOP Example
+--
+Basic AOP example.
+```php
+<?php
+class Monday
+{
+    public function sunday($day = 1)
+    {
+        return $day;
+    }
+
+    public function monday($day = 2)
+    {
+        return $day;
+    }
+}
+
+$c = new Container();
+$c->wrap('Monday', ['monday'], function ($invocation, $args) {
+    $day = $args[0];
+
+    return $invocation($day + 1);
+});
+$c->wrap('Monday', ['/day$/'], function ($invocation, $args) {
+    $day = $args[0];
+
+    return $invocation($day * 7);
+});
+$monday = $c->newInstance('Monday');
+var_dump(1 * 7     === $monday->sunday());
+var_dump(2 * 7 + 1 === $monday->monday());
 ?>
 ```

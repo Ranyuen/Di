@@ -56,27 +56,35 @@ $methods = array_map(function ($method) {
         },
         $method->getParameters()
     ));
-    return [$docComment, $visiblity, $name, $params];
+    $paramNames = implode(', ', array_map(
+        function ($param) {
+            return '$'.$param->getName();
+        },
+        $method->getParameters()
+    ));
+
+    return [$docComment, $visiblity, $name, $params, $paramNames];
 }, $methods);
 echo '<?php ';
 ?>
 <?php echo $interface->getDocComment(); ?>
 class Tmp<?php echo $uniqid; ?>
     extends <?php echo $interface->getName(); ?> {
-<?php foreach ($methods as list($docComment, $visiblity, $name, $params)) { ?>
+<?php foreach ($methods as list($docComment, $visiblity, $name, $params, $paramNames)) { ?>
     <?php echo $docComment; ?>
     <?php echo $visiblity; ?> function <?php echo $name; ?>(
         <?php echo $params; ?>
     ) {
+        $interceptor = \Ranyuen\Di\Container::$interceptors['<?php echo $uniqid; ?>'];
         $invocation = function () {
             $parent = new \ReflectionClass('<?php echo $interface->getName(); ?>');
             $method = $parent->getMethod('<?php echo $name; ?>');
 
             return $method->invokeArgs($this, func_get_args());
         };
-        $interceptor = \Ranyuen\Di\Container::$interceptors['<?php echo $uniqid; ?>'];
+        $args = [<?php echo $paramNames; ?>];
 
-        return $interceptor($invocation, func_get_args());
+        return $interceptor($invocation, $args);
     }
 <?php } ?>
 }
