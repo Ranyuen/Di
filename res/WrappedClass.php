@@ -70,7 +70,8 @@ echo '<?php ';
 <?php echo $interface->getDocComment(); ?>
 class Tmp<?php echo $uniqid; ?>
     extends <?php echo $interface->getName(); ?> {
-<?php foreach ($methods as list($docComment, $visiblity, $name, $params, $paramNames)) { ?>
+<?php foreach ($methods as $method) {
+        list($docComment, $visiblity, $name, $params, $paramNames) = $method; ?>
     <?php echo $docComment; ?>
     <?php echo $visiblity; ?> function <?php echo $name; ?>(
         <?php echo $params; ?>
