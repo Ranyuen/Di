@@ -211,14 +211,14 @@ class Monday
         return $day;
     }
 
-    public function monday($day = 2)
+    public function tuesday($day = 2)
     {
         return $day;
     }
 }
 
 $c = new Container();
-$c->wrap('Monday', ['monday'], function ($invocation, $args) {
+$c->wrap('Monday', ['tuesday'], function ($invocation, $args) {
     $day = $args[0];
 
     return $invocation($day + 1);
@@ -230,6 +230,35 @@ $c->wrap('Monday', ['/day$/'], function ($invocation, $args) {
 });
 $monday = $c->newInstance('Monday');
 var_dump(1 * 7     === $monday->sunday());
-var_dump(2 * 7 + 1 === $monday->monday());
+var_dump(2 * 7 + 1 === $monday->tuesday());
+?>
+```
+
+Is there no annotation for AOP? Yes we can!
+
+```php
+<?php
+class Tuesday
+{
+    /** @Wrap('advice.sunday,advice.monday') */
+    public function wednesday($day)
+    {
+        return $day + 3;
+    }
+}
+
+$c = new Container();
+$c['advice.sunday'] = $c->protect(function ($invocation, $args) {
+    $day = $args[0];
+
+    return $invocation($day + 4);
+});
+$c['advice.monday'] = $c->protect(function ($invocation, $args) {
+    $day = $args[0];
+
+    return $invocation($day * 7);
+});
+$tuesday = $c->newInstance('Tuesday');
+var_dump(5 * 7 + 4 + 3 === $tuesday->wednesday(5));
 ?>
 ```
