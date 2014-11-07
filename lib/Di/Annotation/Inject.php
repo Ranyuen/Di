@@ -1,6 +1,6 @@
 <?php
 /**
- * Annotation based simple DI (Dependency Injection) & AOP (Aspect Oriented Programming)
+ * Annotation based simple DI (Dependency Injection) & AOP (Aspect Oriented Programming).
  *
  * @author    Ranyuen <cal_pone@ranyuen.com>
  * @author    ne_Sachirou <utakata.c4se@gmail.com>
@@ -12,7 +12,7 @@ namespace Ranyuen\Di\Annotation;
 /**
  * Inject annotation.
  */
-class Inject
+class Inject extends Annotation
 {
     /**
      * Does the method or property has @Inject annotation?
@@ -23,7 +23,7 @@ class Inject
      */
     public function isInjectable($target)
     {
-        return !!preg_match('/^[\\s\\/*]*@Inject\\W/m', $target->getDocComment());
+        return $this->hasAnnotation($target, 'Inject');
     }
 
     /**
@@ -35,10 +35,8 @@ class Inject
      */
     public function getInject($target)
     {
-        if (!preg_match('/^[\\s\\/*]*@Inject\\([\'"]([^\'"]+)[\'"]\\)/m', $target->getDocComment(), $matches)) {
-            return null;
-        }
+        $values = $this->getValues($target, 'Inject');
 
-        return $matches[1];
+        return isset($values[0]) ? $values[0] : null;
     }
 }

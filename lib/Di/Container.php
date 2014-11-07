@@ -126,6 +126,9 @@ class Container extends Pimple\Container
     {
         if (isset($this->wraps[$class])) {
             $class = $this->wraps[$class];
+        } else {
+            $this->wrapClass($class);
+            $class = $this->wraps[$class];
         }
         $class = new \ReflectionClass($class);
         $method = $class->hasMethod('__construct') ?
@@ -178,5 +181,22 @@ class Container extends Pimple\Container
         }
 
         return $key;
+    }
+
+    /**
+     * @param string $class Will be wrapped.
+     *
+     * @return void
+     */
+    private function wrapClass($class)
+    {
+        $class = new \ReflectionClass($class);
+        $wraps = (new Annotation\Wrap())->gatherWraps($class);
+        foreach ($wraps as $advice => $methods) {
+            $this->wrap($class->getName(), $methods, $this[$advice]);
+        }
+        if (!isset($this->wraps[$class->getName()])) {
+            $this->wraps[$class->getName()] = $class->getName();
+        }
     }
 }

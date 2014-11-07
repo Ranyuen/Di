@@ -10,19 +10,8 @@
 namespace Ranyuen\Di\Annotation;
 
 /**
- * Named annotation.
+ * Annotation exception.
  */
-class Named extends Annotation
+class AnnotationException extends \RuntimeException
 {
-    /**
-     * Get the values of @Named annotation.
-     *
-     * @param \ReflectionMethod|\ReflectionProperty $target Target.
-     *
-     * @return array
-     */
-    public function getNamed($target)
-    {
-        return $this->getValues($target, 'Named');
-    }
 }
