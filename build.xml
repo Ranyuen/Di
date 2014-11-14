@@ -9,11 +9,11 @@
                 <include name="tests/**/*.php"/>
             </fileset>
         </apply>
-        <exec executable="vendor/bin/php-cs-fixer" passthru="true" checkreturn="true">
+        <exec executable="vendor/bin/php-cs-fixer" passthru="true">
             <arg value="fix"/>
             <arg value="lib/"/>
         </exec>
-        <exec executable="vendor/bin/php-cs-fixer" passthru="true" checkreturn="true">
+        <exec executable="vendor/bin/php-cs-fixer" passthru="true">
             <arg value="fix"/>
             <arg value="tests/"/>
         </exec>

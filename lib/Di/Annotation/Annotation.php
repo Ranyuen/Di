@@ -12,7 +12,7 @@ namespace Ranyuen\Di\Annotation;
 /**
  * Annotation base.
  */
-class Annotation
+abstract class Annotation
 {
     /**
      * Does the target has the annotations?

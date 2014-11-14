@@ -153,7 +153,7 @@ class Container extends Pimple\Container
      * Detect what key to get the value.
      *
      * Priority.
-     * 1. Inject with name annotation.
+     * 1. Inject annotation with name.
      * 2. Named annotation.
      * 3. Type hinting and type of var annotation.
      * 4. Variable name.
@@ -187,6 +187,8 @@ class Container extends Pimple\Container
      * @param string $class Will be wrapped.
      *
      * @return void
+     *
+     * @throws \ReflectionException The class doesn't exist.
      */
     private function wrapClass($class)
     {
