@@ -7,19 +7,11 @@
  * @copyright 2014-2014 Ranyuen
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
  */
-namespace Ranyuen\Di;
+namespace Ranyuen\Di\Annotation;
 
 /**
- * Service provider interface.
+ * Annotation exception.
  */
-interface ServiceProviderInterface
+class AnnotationException extends \RuntimeException
 {
-    /**
-     * Registers services on the given container.
-     *
-     * @param Container $container An Container instance
-     *
-     * @return void
-     */
-    public function register(Container $container);
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Simple Ray.Di style DI (Dependency Injector) extending Pimple.
+ * Annotation based simple DI (Dependency Injection) & AOP (Aspect Oriented Programming).
  *
  * @author    Ranyuen <cal_pone@ranyuen.com>
  * @author    ne_Sachirou <utakata.c4se@gmail.com>
@@ -10,10 +10,6 @@
 namespace Ranyuen\Di;
 
 use Pimple;
-use ReflectionClass;
-use ReflectionException;
-use ReflectionParameter;
-use ReflectionProperty;
 
 /**
  * Service container.
@@ -21,7 +17,12 @@ use ReflectionProperty;
 class Container extends Pimple\Container
 {
     /** @var array */
-    private $classNames = [];
+    public static $interceptors = [];
+
+    /** @var array */
+    private $classes = [];
+    /** @var array */
+    private $wraps = [];
 
     /**
      * Bind a value with the class name.
@@ -34,12 +35,54 @@ class Container extends Pimple\Container
      *
      * @return void
      *
-     * @throws RuntimeException Prevent override of a frozen service.
+     * @throws \RuntimeException Prevent override of a frozen service.
      */
     public function bind($interface, $key, $value)
     {
         $this[$key] = $value;
-        $this->classNames[$interface] = $key;
+        $this->classes[$interface] = $key;
+    }
+
+    /**
+     * AOP.
+     *
+     * @param string   $interface   Class name.
+     * @param mixed[]  $matchers    Pointcut.
+     * @param callable $interceptor Advice. function(callable $invocation, array $args)
+     *
+     * @return void
+     *
+     * @throws \ReflectionException The class doesn't exist.
+     *
+     * @SuppressWarnings(PHPMD.EvalExpression)
+     * @SuppressWarnings(PHPMD.StaticAccess)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function wrap($interface, $matchers, callable $interceptor)
+    {
+        $uniqid = uniqid();
+        self::$interceptors[$uniqid] = $interceptor;
+        if (isset($this->wraps[$interface])) {
+            $parent = $this->wraps[$interface];
+            $this->wraps[$interface] = "Tmp$uniqid";
+            $interface = $parent;
+        } else {
+            $this->wraps[$interface] = "Tmp$uniqid";
+        }
+        $interface = new \ReflectionClass($interface);
+        $render = function () use ($interface, $matchers, $uniqid) {
+            ob_start();
+            eval('?>'.func_get_arg(0));
+
+            return ob_get_clean();
+        };
+        //$render = $render->bindTo(null); // Closure::bindTo isn't impl in HHVM.
+        $wrappedClass = $render(file_get_contents('res/WrappedClass.php'));
+        $dir = sys_get_temp_dir();
+        $file = fopen("$dir/$uniqid", 'w');
+        fwrite($file, $wrappedClass);
+        include_once "$dir/$uniqid";
+        fclose($file);
     }
 
     /**
@@ -54,13 +97,9 @@ class Container extends Pimple\Container
         if (!is_object($obj)) {
             return $obj;
         }
-        try {
-            $interface = new ReflectionClass(get_class($obj));
-        } catch (ReflectionException $ex) {
-            return $obj;
-        }
+        $interface = new \ReflectionClass(get_class($obj)); // This must not fail.
         foreach ($interface->getProperties() as $prop) {
-            if (!(new Annotation())->isInjectable($prop)) {
+            if (!(new Annotation\Inject())->isInjectable($prop)) {
                 continue;
             }
             $key = $this->detectKey($prop);
@@ -76,81 +115,90 @@ class Container extends Pimple\Container
     /**
      * Create a new instance and injection.
      *
-     * @param string $interface Create an instance.
-     * @param array  $args      Arguments which doesn't inject.
+     * @param string $class Create an instance.
+     * @param array  $args  Arguments which doesn't inject.
      *
      * @return object
      *
-     * @throws ReflectionException The class doesn't exist.
+     * @throws \ReflectionException The class doesn't exist.
      */
-    public function newInstance($interface, $args = [])
+    public function newInstance($class, $args = [])
     {
-        $interface = new ReflectionClass($interface);
-        $method = $interface->hasMethod('__construct') ?
-            $interface->getMethod('__construct') :
+        if (isset($this->wraps[$class])) {
+            $class = $this->wraps[$class];
+        } else {
+            $this->wrapClass($class);
+            $class = $this->wraps[$class];
+        }
+        $class = new \ReflectionClass($class);
+        $method = $class->hasMethod('__construct') ?
+            $class->getMethod('__construct') :
             null;
-        if ($method && (new Annotation())->isInjectable($method)) {
-            $named = (new Annotation())->getNamed($method);
-            $idx = 0;
-            foreach ($method->getParameters() as $param) {
-                $key = $this->detectKey($param, $named);
-                if (isset($this[$key])) {
-                    array_splice($args, $idx, 0, [$this[$key]]);
+        if ($method) {
+            foreach ($method->getParameters() as $i => $param) {
+                if (isset($args[$key = $param->getName()])) {
+                    array_splice($args, $i, 0, [$args[$key]]);
+                } elseif (isset($this[$key = $this->detectKey($param)])) {
+                    array_splice($args, $i, 0, [$this[$key]]);
                 }
-                ++$idx;
             }
         }
-        $obj = $interface->newInstanceArgs($args);
+        $obj = $class->newInstanceArgs($args);
         $this->inject($obj);
 
         return $obj;
     }
 
     /**
-     * @param ReflectionParameter|ReflectionProperty $obj   Target.
-     * @param array                                  $named Named of __construct.
+     * Detect what key to get the value.
+     *
+     * Priority.
+     * 1. Inject annotation with name.
+     * 2. Named annotation.
+     * 3. Type hinting and type of var annotation.
+     * 4. Variable name.
+     *
+     * @param \ReflectionParameter|\ReflectionProperty $obj Target.
      *
      * @return string
      */
-    private function detectKey($obj, $named = [])
+    private function detectKey($obj)
     {
         $key = $obj->getName();
-        if ($obj instanceof ReflectionProperty) {
-            $named = (new Annotation())->getNamed($obj);
+        if ($obj instanceof \ReflectionProperty) {
+            if ($injectName = (new Annotation\Inject())->getInject($obj)) {
+                $named = [$key => $injectName];
+            } else {
+                $named = (new Annotation\Named())->getNamed($obj);
+            }
+        } else {
+            $named = (new Annotation\Named())->getNamed($obj->getDeclaringFunction());
         }
         if (isset($named[$key])) {
             $key = $named[$key];
-        } else {
-            $className = $this->getClassName($obj);
-            if (isset($this->classNames[$className])) {
-                $key = $this->classNames[$className];
-            }
+        } elseif (isset($this->classes[$type = (new Reflection\Type())->getType($obj)])) {
+            $key = $this->classes[$type];
         }
 
         return $key;
     }
 
     /**
-     * @param ReflectionParameter|ReflectionProperty $obj Target.
+     * @param string $class Will be wrapped.
      *
-     * @return string|null
+     * @return void
+     *
+     * @throws \ReflectionException The class doesn't exist.
      */
-    private function getClassName($obj)
+    private function wrapClass($class)
     {
-        if ($obj instanceof ReflectionParameter) {
-            $class = $obj->getClass();
-
-            return $class ? $class->getName() : null;
+        $class = new \ReflectionClass($class);
+        $wraps = (new Annotation\Wrap())->gatherWraps($class);
+        foreach ($wraps as $advice => $methods) {
+            $this->wrap($class->getName(), $methods, $this[$advice]);
         }
-        $matches = [];
-        if (preg_match(
-            '/^[\\s\\/*]*@var\s+([a-zA-Z0-9_\\x7f-\\xff\\\\]+)/m',
-            $obj->getDocComment(),
-            $matches
-        )) {
-            return $matches[1];
+        if (!isset($this->wraps[$class->getName()])) {
+            $this->wraps[$class->getName()] = $class->getName();
         }
-
-        return null;
     }
 }

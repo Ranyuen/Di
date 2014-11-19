@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ranyuen/di" default="test">
+    <target name="test">
+        <apply executable="php" checkreturn="true">
+            <arg value="-l"/>
+            <fileset dir=".">
+                <include name="lib/**/*.php"/>
+                <include name="res/**/*.php"/>
+                <include name="tests/**/*.php"/>
+            </fileset>
+        </apply>
+        <exec executable="vendor/bin/php-cs-fixer" passthru="true">
+            <arg value="fix"/>
+            <arg value="lib/"/>
+        </exec>
+        <exec executable="vendor/bin/php-cs-fixer" passthru="true">
+            <arg value="fix"/>
+            <arg value="tests/"/>
+        </exec>
+        <exec executable="vendor/bin/phpmd" passthru="true" checkreturn="true">
+            <arg value="lib/"/>
+            <arg value="text"/>
+            <arg value="phpmd.xml"/>
+        </exec>
+        <exec executable="vendor/bin/phpcs" passthru="true" checkreturn="true">
+            <arg value="--standard=phpcs.xml"/>
+            <arg value="--extensions=php"/>
+            <arg value="lib/"/>
+        </exec>
+        <exec command="vendor/bin/phpunit" passthru="true" checkreturn="true"/>
+    </target>
+</project>

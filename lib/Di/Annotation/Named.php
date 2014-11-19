@@ -7,19 +7,22 @@
  * @copyright 2014-2014 Ranyuen
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
  */
-namespace Ranyuen\Di;
+namespace Ranyuen\Di\Annotation;
 
 /**
- * Service provider interface.
+ * Named annotation.
  */
-interface ServiceProviderInterface
+class Named extends Annotation
 {
     /**
-     * Registers services on the given container.
+     * Get the values of @Named annotation.
      *
-     * @param Container $container An Container instance
+     * @param \ReflectionMethod|\ReflectionProperty $target Target.
      *
-     * @return void
+     * @return array
      */
-    public function register(Container $container);
+    public function getNamed($target)
+    {
+        return $this->getValues($target, 'Named');
+    }
 }

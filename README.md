@@ -1,15 +1,21 @@
+[![Build Status](https://travis-ci.org/Ranyuen/Di.svg)](https://travis-ci.org/Ranyuen/Di)
+[![HHVM Status](http://hhvm.h4cc.de/badge/ranyuen/di.svg)](http://hhvm.h4cc.de/package/ranyuen/di)
+
 Ranyuen/Di
 ==
-Simple Ray.Di style DI (Dependency Injector) extending Pimple.
+Annotation based simple DI (Dependency Injection) & AOP (Aspect Oriented Programming).
 
-_cf._ [fabpot/Pimple](https://github.com/fabpot/Pimple)
+_cf._ [fabpot/Pimple](http://pimple.sensiolabs.org/)
 
-_cf._ [koriym/Ray.Di](https://github.com/koriym/Ray.Di)
+_cf._ [koriym/Ray.Di & Ray.Aop](https://code.google.com/p/rayphp/)
+
+_cf._ [mnapoli/PHP-DI](http://php-di.org/)
 
 Features
 --
 1. Compatible with Pimple 3.
-2. Injection through Ray.Di style _@Inject_ annotations. It's easy!
+2. Zero configuration. Injection through reflection and annotations. It's easy!
+3. AOP support.
 
 Install
 --
@@ -17,9 +23,11 @@ Install
 composer require ranyuen/di
 ```
 
-Example
+Support PHP >=5.4 and latest HHVM.
+
+DI Example
 --
-We can use Ranyuen/Di same as Pimple 3.
+Ranyuen/Di just extends Pimple. So we can use this same as Pimple 3.
 
 ```php
 <?php
@@ -51,7 +59,7 @@ var_dump($container['factory'] !== $container['factory']);
 ?>
 ```
 
-Basic _@Inject_ annotations example. Inject to constructor & properties.
+Basic Ray.Di and PHP-DI style _@Inject_ annotations example. Inject to constructor & properties.
 
 ```php
 <?php
@@ -66,7 +74,6 @@ class Yuraru
     /** @Inject */
     public $momonga;
 
-    /** @Inject */
     public function __construct($momonga, $id)
     {
         $this->benri = $momonga;
@@ -120,9 +127,6 @@ class Benri
 
     public $momonga;
 
-    /**
-     * @Inject
-     */
     public function __construct(Momonga $benri)
     {
         $this->momonga = $benri;
@@ -153,10 +157,7 @@ class Musasabi
 
     public $benri;
 
-    /**
-     * @Inject
-     * @Named('benri=momonga')
-     */
+    /** @Named('benri=momonga') */
     public function __construct($benri)
     {
         $this->benri = $benri;
@@ -195,5 +196,69 @@ var_dump($momonga->momonga instanceof Momonga);
 var_dump($momonga->momonga === $container['momonga']);
 var_dump($momonga->factory instanceof Momonga);
 var_dump($momonga->factory !== $container['factory']);
+?>
+```
+
+AOP Example
+--
+Basic AOP example.
+```php
+<?php
+class Monday
+{
+    public function sunday($day = 1)
+    {
+        return $day;
+    }
+
+    public function tuesday($day = 2)
+    {
+        return $day;
+    }
+}
+
+$c = new Container();
+$c->wrap('Monday', ['tuesday'], function ($invocation, $args) {
+    $day = $args[0];
+
+    return $invocation($day + 1);
+});
+$c->wrap('Monday', ['/day$/'], function ($invocation, $args) {
+    $day = $args[0];
+
+    return $invocation($day * 7);
+});
+$monday = $c->newInstance('Monday');
+var_dump(1 * 7     === $monday->sunday());
+var_dump(2 * 7 + 1 === $monday->tuesday());
+?>
+```
+
+Is there no annotation for AOP? Yes we can!
+
+```php
+<?php
+class Tuesday
+{
+    /** @Wrap('advice.sunday,advice.monday') */
+    public function wednesday($day)
+    {
+        return $day + 3;
+    }
+}
+
+$c = new Container();
+$c['advice.sunday'] = $c->protect(function ($invocation, $args) {
+    $day = $args[0];
+
+    return $invocation($day + 4);
+});
+$c['advice.monday'] = $c->protect(function ($invocation, $args) {
+    $day = $args[0];
+
+    return $invocation($day * 7);
+});
+$tuesday = $c->newInstance('Tuesday');
+var_dump(5 * 7 + 4 + 3 === $tuesday->wednesday(5));
 ?>
 ```
