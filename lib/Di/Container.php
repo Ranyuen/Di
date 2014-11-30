@@ -44,6 +44,22 @@ class Container extends Pimple\Container
     }
 
     /**
+     * Get object by type.
+     *
+     * @param string $interface FQN. This must equal to the FQN you use in bind().
+     *
+     * @return mixed
+     */
+    public function getByType($interface)
+    {
+        if (!isset($this->classes[$interface])) {
+            return null;
+        }
+
+        return $this[$this->classes[$interface]];
+    }
+
+    /**
      * AOP.
      *
      * @param string   $interface   Class name.
