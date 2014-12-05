@@ -53,7 +53,7 @@ class Container extends Pimple\Container
     public function getByType($interface)
     {
         if (!isset($this->classes[$interface])) {
-            return null;
+            return;
         }
 
         return $this[$this->classes[$interface]];

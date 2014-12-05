@@ -50,7 +50,7 @@ class Type
             );
         }
 
-        return null;
+        return;
     }
 
     /**
@@ -75,7 +75,7 @@ class Type
             );
         }
 
-        return null;
+        return;
     }
 
     /**
@@ -113,7 +113,7 @@ class Type
         if (in_array($type, $reserved)
             || !preg_match('/^[a-zA-Z0-9_\\x7f-\\xff\\\\]+$/', $type)
         ) {
-            return null;
+            return;
         }
         if ('\\' !== $type[0]) {
             $uses = (new PhpParser())->parseClass($class);
