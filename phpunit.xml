@@ -8,7 +8,7 @@
         </testsuite>
     </testsuites>
     <logging>
-        <log type="coverage-text" target="php://stdout"/>
+        <!--<log type="coverage-text" target="php://stdout"/>-->
         <log type="coverage-html" target="build/coverage/"/>
     </logging>
 </phpunit>

@@ -18,11 +18,48 @@ class Container extends Pimple\Container
 {
     /** @var array */
     public static $interceptors = [];
+    /** @var Container */
+    public static $facade;
+
+    /**
+     * Set the container as facade.
+     *
+     * @param Container $c The container for facade.
+     *
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.EvalExpression)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public static function setAsFacade(Container $c)
+    {
+        if (!self::$facade) {
+            spl_autoload_register(
+                function ($interface) {
+                    $c = Container::$facade;
+                    if (!$c->getFacadeContent($interface)) {
+                        return;
+                    }
+                    $render = function () use ($interface) {
+                        ob_start();
+                        eval('?>'.func_get_arg(0));
+
+                        return ob_get_clean();
+                    };
+                    $facadeClass = $render(file_get_contents('res/FacadeClass.php'));
+                    eval('?>'.$facadeClass);
+                }
+            );
+        }
+        self::$facade = $c;
+    }
 
     /** @var array */
     private $classes = [];
     /** @var array */
     private $wraps = [];
+    /** @var array */
+    private $facades = [];
 
     /**
      * Bind a value with the class name.
@@ -33,7 +70,7 @@ class Container extends Pimple\Container
      * @param mixed  $value     The value of the parameter or a closure to
      *                          define an object.
      *
-     * @return void
+     * @return this
      *
      * @throws \RuntimeException Prevent override of a frozen service.
      */
@@ -41,6 +78,8 @@ class Container extends Pimple\Container
     {
         $this[$key] = $value;
         $this->classes[$interface] = $key;
+
+        return $this;
     }
 
     /**
@@ -66,7 +105,7 @@ class Container extends Pimple\Container
      * @param mixed[]  $matchers    Pointcut.
      * @param callable $interceptor Advice. function(callable $invocation, array $args)
      *
-     * @return void
+     * @return this
      *
      * @throws \ReflectionException The class doesn't exist.
      *
@@ -99,6 +138,8 @@ class Container extends Pimple\Container
         fwrite($file, $wrappedClass);
         include_once "$dir/$uniqid";
         fclose($file);
+
+        return $this;
     }
 
     /**
@@ -163,6 +204,41 @@ class Container extends Pimple\Container
         $this->inject($obj);
 
         return $obj;
+    }
+
+    /**
+     * Register facade.
+     *
+     * @param string $facadeName  Facade name.
+     * @param string $contentName Content name.
+     *
+     * @return this
+     */
+    public function facade($facadeName, $contentName)
+    {
+        $this->facades[$facadeName] = $contentName;
+
+        return $this;
+    }
+
+    /**
+     * Get facade content.
+     *
+     * @param string $facadeName Facade name.
+     *
+     * @return mixed
+     */
+    public function getFacadeContent($facadeName)
+    {
+        if (!isset($this->facades[$facadeName])) {
+            return;
+        }
+        $contentName = $this->facades[$facadeName];
+        if (!isset($this[$contentName])) {
+            return;
+        }
+
+        return $this[$contentName];
     }
 
     /**
