@@ -61,6 +61,14 @@ class Container extends Pimple\Container
     /** @var array */
     private $facades = [];
 
+    public function __construct(array $values = [])
+    {
+        parent::__construct($values);
+        if (!self::$facade) {
+            self::setAsFacade($this);
+        }
+    }
+
     /**
      * Bind a value with the class name.
      *
