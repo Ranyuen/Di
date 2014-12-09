@@ -85,7 +85,7 @@ class Tmp<?php echo $uniqid; ?>
         };
         $args = [<?php echo $paramNames; ?>];
 
-        return $interceptor($invocation, $args);
+        return $interceptor($invocation, $args, isset($this) ? $this : null);
     }
 <?php } ?>
 }

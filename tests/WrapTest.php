@@ -45,6 +45,25 @@ class WrapTest extends PHPUnit_Framework_TestCase
         $this->assertSame($wrapped2, $result[1]);
     }
 
+    public function testWrapGetThis()
+    {
+        $c = new Container();
+        $c->wrap(
+            'Fixture\Wrapped',
+            ['inc'],
+            function ($invocation, $args, $me) {
+                list($a, $w) = $args;
+                $result = $invocation($a, $w);
+                ++$me->a;
+
+                return $result;
+            }
+        );
+        $wrapped = $c->newInstance('Fixture\Wrapped');
+        $result = $wrapped->inc(41);
+        $this->assertEquals(43, $wrapped->a);
+    }
+
     public function testWrappedByAnnotation()
     {
         $c = new Container();
