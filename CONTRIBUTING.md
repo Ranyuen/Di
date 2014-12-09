@@ -4,7 +4,7 @@ CONTRIBUTING
 Before commit, push or pull request.
 --
 ```sh
-vendor/bin/phing test && php README.md
+vendor/bin/phing
 ```
 
 Start developing.

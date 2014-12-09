@@ -199,6 +199,26 @@ var_dump($momonga->factory !== $container['factory']);
 ?>
 ```
 
+Take out DI instance by static access. We call this "Facade", like Laravel framwork.
+
+```php
+<?php
+class Building
+{
+  public function launch()
+  {
+    return 'rocket';
+  }
+}
+
+$c = new Container();
+Container::setAsFacade($c);
+$c['building'] = function ($c) { return new Building(); };
+$c->facade('Station', 'building');
+var_dump('rocket' === Station::launch());
+?>
+```
+
 AOP Example
 --
 Basic AOP example.
