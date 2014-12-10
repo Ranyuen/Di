@@ -31,7 +31,7 @@ abstract class Annotation
         }
 
         return false !== preg_match(
-            "/^[\\s\\/*]*@$annotation(?:\W|$)/m",
+            '#^[\\s/*]*@'.preg_quote($annotation).'(?:\W|$)#m',
             $target->getDocComment()
         );
     }
@@ -53,11 +53,11 @@ abstract class Annotation
         }
         $values = [];
         if (preg_match_all(
-            "/^[\\s\\/*]*@$annotation(?:\\((?:['\"]([^'\"]+)['\"])?\\))?/m",
+            '#^[\\s/*]*@'.preg_quote($annotation).'\\(([\'"])([^\\1]+?)\\1\\)#m',
             $target->getDocComment(),
             $matches
         )) {
-            foreach (explode(',', implode(',', $matches[1])) as $field) {
+            foreach (explode(',', implode(',', $matches[2])) as $field) {
                 if (false === strpos($field, '=')) {
                     $values[] = trim($field);
                 } else {
