@@ -14,7 +14,21 @@ namespace Ranyuen\Di;
  */
 class InjectorCache
 {
-    private static $cache = [];
+    private static $cache;
+
+    /**
+     * Remove cache reference of the container.
+     *
+     * @param Container $c Container.
+     *
+     * @return void
+     */
+    public static function removeCache(Container $c)
+    {
+        if (isset(self::$cache[$c])) {
+            unset(self::$cache[$c]);
+        }
+    }
 
     /**
      * Get inject injetor.
@@ -28,8 +42,8 @@ class InjectorCache
      */
     public static function getInject(Container $c, $className)
     {
-        $cache = self::initCache($c)['inject'];
-        if (!isset($cache[$className])) {
+        $cache = self::initCache($c);
+        if (!isset($cache['inject'][$className])) {
             $class = new \ReflectionClass($className);
             $annotation = new Annotation\Inject();
             $deps = [];
@@ -49,10 +63,11 @@ class InjectorCache
                     $prop->setValue($obj, $c[$key]);
                 }
             };
-            $cache[$className] = $injector;
+            $cache['inject'][$className] = $injector;
+            self::$cache[$c] = $cache;
         }
 
-        return $cache[$className];
+        return $cache['inject'][$className];
     }
 
     /**
@@ -65,8 +80,8 @@ class InjectorCache
      */
     public static function getNewInstance(Container $c, $className)
     {
-        $cache = self::initCache($c)['newInstance'];
-        if (!isset($cache[$className])) {
+        $cache = self::initCache($c);
+        if (!isset($cache['newInstance'][$className])) {
             $class = new \ReflectionClass($className);
             if ($class->hasMethod('__construct')) {
                 $deps = [];
@@ -95,23 +110,26 @@ class InjectorCache
                     return $class->newInstanceArgs();
                 };
             }
-            $cache[$className] = $injector;
+            $cache['newInstance'][$className] = $injector;
+            self::$cache[$c] = $cache;
         }
 
-        return $cache[$className];
+        return $cache['newInstance'][$className];
     }
 
     private static function initCache(Container $c)
     {
-        $id = spl_object_hash($c);
-        if (!isset(self::$cache[$id])) {
-            self::$cache[$id] = [
+        if (is_null(self::$cache)) {
+            self::$cache = new \SplObjectStorage();
+        }
+        if (!isset(self::$cache[$c])) {
+            self::$cache[$c] = [
                 'inject'      => [],
                 'newInstance' => [],
             ];
         }
 
-        return self::$cache[$id];
+        return self::$cache[$c];
     }
 
     /**

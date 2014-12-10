@@ -71,6 +71,17 @@ class Container extends Pimple\Container
     }
 
     /**
+     * @SuppressWarnings(PHPMD.StaticAccess)
+     */
+    public function __destruct()
+    {
+        InjectorCache::removeCache($this);
+        if (is_callable('parent::__destruct')) {
+            parent::__destruct();
+        }
+    }
+
+    /**
      * Bind a value with the class name.
      *
      * @param string $interface The class name of the value.
