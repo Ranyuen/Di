@@ -55,7 +55,8 @@ class Container extends Pimple\Container
     }
 
     /** @var array */
-    private $classes = [];
+    public $classes = [];
+
     /** @var array */
     private $wraps = [];
     /** @var array */
@@ -156,23 +157,16 @@ class Container extends Pimple\Container
      * @param object $obj Target object.
      *
      * @return object
+     *
+     * @SuppressWarnings(PHPMD.StaticAccess)
      */
     public function inject($obj)
     {
         if (!is_object($obj)) {
             return $obj;
         }
-        $interface = new \ReflectionClass(get_class($obj)); // This must not fail.
-        foreach ($interface->getProperties() as $prop) {
-            if (!(new Annotation\Inject())->isInjectable($prop)) {
-                continue;
-            }
-            $key = $this->detectKey($prop);
-            if (isset($this[$key])) {
-                $prop->setAccessible(true);
-                $prop->setValue($obj, $this[$key]);
-            }
-        }
+        $injector = InjectorCache::getInject($this, get_class($obj)); // This must not fail.
+        $injector($obj);
 
         return $obj;
     }
@@ -186,6 +180,8 @@ class Container extends Pimple\Container
      * @return object
      *
      * @throws \ReflectionException The class doesn't exist.
+     *
+     * @SuppressWarnings(PHPMD.StaticAccess)
      */
     public function newInstance($class, $args = [])
     {
@@ -195,20 +191,8 @@ class Container extends Pimple\Container
             $this->wrapClass($class);
             $class = $this->wraps[$class];
         }
-        $class = new \ReflectionClass($class);
-        $method = $class->hasMethod('__construct') ?
-            $class->getMethod('__construct') :
-            null;
-        if ($method) {
-            foreach ($method->getParameters() as $i => $param) {
-                if (isset($args[$key = $param->getName()])) {
-                    array_splice($args, $i, 0, [$args[$key]]);
-                } elseif (isset($this[$key = $this->detectKey($param)])) {
-                    array_splice($args, $i, 0, [$this[$key]]);
-                }
-            }
-        }
-        $obj = $class->newInstanceArgs($args);
+        $injector = InjectorCache::getNewInstance($this, $class);
+        $obj = $injector($args);
         $this->inject($obj);
 
         return $obj;
@@ -247,40 +231,6 @@ class Container extends Pimple\Container
         }
 
         return $this[$contentName];
-    }
-
-    /**
-     * Detect what key to get the value.
-     *
-     * Priority.
-     * 1. Inject annotation with name.
-     * 2. Named annotation.
-     * 3. Type hinting and type of var annotation.
-     * 4. Variable name.
-     *
-     * @param \ReflectionParameter|\ReflectionProperty $obj Target.
-     *
-     * @return string
-     */
-    private function detectKey($obj)
-    {
-        $key = $obj->getName();
-        if ($obj instanceof \ReflectionProperty) {
-            if ($injectName = (new Annotation\Inject())->getInject($obj)) {
-                $named = [$key => $injectName];
-            } else {
-                $named = (new Annotation\Named())->getNamed($obj);
-            }
-        } else {
-            $named = (new Annotation\Named())->getNamed($obj->getDeclaringFunction());
-        }
-        if (isset($named[$key])) {
-            $key = $named[$key];
-        } elseif (isset($this->classes[$type = (new Reflection\Type())->getType($obj)])) {
-            $key = $this->classes[$type];
-        }
-
-        return $key;
     }
 
     /**
