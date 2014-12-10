@@ -3,6 +3,11 @@ namespace Fixture;
 
 class Wrapped
 {
+    public static function psps($a)
+    {
+        return $a * 2;
+    }
+
     /** @var integer */
     public $a = 41;
 

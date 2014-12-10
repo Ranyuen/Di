@@ -1,10 +1,10 @@
 <?php
 /**
- * Annotation based simple DI (Dependency Injection) & AOP (Aspect Oriented Programming).
+ * Annotation based simple DI & AOP at PHP.
  *
  * @author    Ranyuen <cal_pone@ranyuen.com>
  * @author    ne_Sachirou <utakata.c4se@gmail.com>
- * @copyright 2014-2014 Ranyuen
+ * @copyright 2014-2015 Ranyuen
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
  */
 namespace Ranyuen\Di;
@@ -18,11 +18,68 @@ class Container extends Pimple\Container
 {
     /** @var array */
     public static $interceptors = [];
+    /** @var Container */
+    public static $facade;
+
+    /**
+     * Set the container as facade.
+     *
+     * @param Container $c The container for facade.
+     *
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.EvalExpression)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public static function setAsFacade(Container $c)
+    {
+        if (!self::$facade) {
+            spl_autoload_register(
+                function ($interface) {
+                    $c = Container::$facade;
+                    if (!$c->getFacadeContent($interface)) {
+                        return;
+                    }
+                    $render = function () use ($interface) {
+                        ob_start();
+                        eval('?>'.func_get_arg(0));
+
+                        return ob_get_clean();
+                    };
+                    $facadeClass = $render(file_get_contents('res/FacadeClass.php'));
+                    eval('?>'.$facadeClass);
+                }
+            );
+        }
+        self::$facade = $c;
+    }
 
     /** @var array */
-    private $classes = [];
+    public $classes = [];
+
     /** @var array */
     private $wraps = [];
+    /** @var array */
+    private $facades = [];
+
+    public function __construct(array $values = [])
+    {
+        parent::__construct($values);
+        if (!self::$facade) {
+            self::setAsFacade($this);
+        }
+    }
+
+    /**
+     * @SuppressWarnings(PHPMD.StaticAccess)
+     */
+    public function __destruct()
+    {
+        InjectorCache::removeCache($this);
+        if (is_callable('parent::__destruct')) {
+            parent::__destruct();
+        }
+    }
 
     /**
      * Bind a value with the class name.
@@ -33,7 +90,7 @@ class Container extends Pimple\Container
      * @param mixed  $value     The value of the parameter or a closure to
      *                          define an object.
      *
-     * @return void
+     * @return this
      *
      * @throws \RuntimeException Prevent override of a frozen service.
      */
@@ -41,6 +98,24 @@ class Container extends Pimple\Container
     {
         $this[$key] = $value;
         $this->classes[$interface] = $key;
+
+        return $this;
+    }
+
+    /**
+     * Get object by type.
+     *
+     * @param string $interface FQN. This must equal to the FQN you use in bind().
+     *
+     * @return mixed
+     */
+    public function getByType($interface)
+    {
+        if (!isset($this->classes[$interface])) {
+            return;
+        }
+
+        return $this[$this->classes[$interface]];
     }
 
     /**
@@ -50,7 +125,7 @@ class Container extends Pimple\Container
      * @param mixed[]  $matchers    Pointcut.
      * @param callable $interceptor Advice. function(callable $invocation, array $args)
      *
-     * @return void
+     * @return this
      *
      * @throws \ReflectionException The class doesn't exist.
      *
@@ -83,6 +158,8 @@ class Container extends Pimple\Container
         fwrite($file, $wrappedClass);
         include_once "$dir/$uniqid";
         fclose($file);
+
+        return $this;
     }
 
     /**
@@ -91,23 +168,16 @@ class Container extends Pimple\Container
      * @param object $obj Target object.
      *
      * @return object
+     *
+     * @SuppressWarnings(PHPMD.StaticAccess)
      */
     public function inject($obj)
     {
         if (!is_object($obj)) {
             return $obj;
         }
-        $interface = new \ReflectionClass(get_class($obj)); // This must not fail.
-        foreach ($interface->getProperties() as $prop) {
-            if (!(new Annotation\Inject())->isInjectable($prop)) {
-                continue;
-            }
-            $key = $this->detectKey($prop);
-            if (isset($this[$key])) {
-                $prop->setAccessible(true);
-                $prop->setValue($obj, $this[$key]);
-            }
-        }
+        $injector = InjectorCache::getInject($this, get_class($obj)); // This must not fail.
+        $injector($obj);
 
         return $obj;
     }
@@ -121,6 +191,8 @@ class Container extends Pimple\Container
      * @return object
      *
      * @throws \ReflectionException The class doesn't exist.
+     *
+     * @SuppressWarnings(PHPMD.StaticAccess)
      */
     public function newInstance($class, $args = [])
     {
@@ -130,57 +202,46 @@ class Container extends Pimple\Container
             $this->wrapClass($class);
             $class = $this->wraps[$class];
         }
-        $class = new \ReflectionClass($class);
-        $method = $class->hasMethod('__construct') ?
-            $class->getMethod('__construct') :
-            null;
-        if ($method) {
-            foreach ($method->getParameters() as $i => $param) {
-                if (isset($args[$key = $param->getName()])) {
-                    array_splice($args, $i, 0, [$args[$key]]);
-                } elseif (isset($this[$key = $this->detectKey($param)])) {
-                    array_splice($args, $i, 0, [$this[$key]]);
-                }
-            }
-        }
-        $obj = $class->newInstanceArgs($args);
+        $injector = InjectorCache::getNewInstance($this, $class);
+        $obj = $injector($args);
         $this->inject($obj);
 
         return $obj;
     }
 
     /**
-     * Detect what key to get the value.
+     * Register facade.
      *
-     * Priority.
-     * 1. Inject annotation with name.
-     * 2. Named annotation.
-     * 3. Type hinting and type of var annotation.
-     * 4. Variable name.
+     * @param string $facadeName  Facade name.
+     * @param string $contentName Content name.
      *
-     * @param \ReflectionParameter|\ReflectionProperty $obj Target.
-     *
-     * @return string
+     * @return this
      */
-    private function detectKey($obj)
+    public function facade($facadeName, $contentName)
     {
-        $key = $obj->getName();
-        if ($obj instanceof \ReflectionProperty) {
-            if ($injectName = (new Annotation\Inject())->getInject($obj)) {
-                $named = [$key => $injectName];
-            } else {
-                $named = (new Annotation\Named())->getNamed($obj);
-            }
-        } else {
-            $named = (new Annotation\Named())->getNamed($obj->getDeclaringFunction());
+        $this->facades[$facadeName] = $contentName;
+
+        return $this;
+    }
+
+    /**
+     * Get facade content.
+     *
+     * @param string $facadeName Facade name.
+     *
+     * @return mixed
+     */
+    public function getFacadeContent($facadeName)
+    {
+        if (!isset($this->facades[$facadeName])) {
+            return;
         }
-        if (isset($named[$key])) {
-            $key = $named[$key];
-        } elseif (isset($this->classes[$type = (new Reflection\Type())->getType($obj)])) {
-            $key = $this->classes[$type];
+        $contentName = $this->facades[$facadeName];
+        if (!isset($this[$contentName])) {
+            return;
         }
 
-        return $key;
+        return $this[$contentName];
     }
 
     /**

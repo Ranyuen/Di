@@ -45,6 +45,25 @@ class WrapTest extends PHPUnit_Framework_TestCase
         $this->assertSame($wrapped2, $result[1]);
     }
 
+    public function testWrapGetThis()
+    {
+        $c = new Container();
+        $c->wrap(
+            'Fixture\Wrapped',
+            ['inc'],
+            function ($invocation, $args, $me) {
+                list($a, $w) = $args;
+                $result = $invocation($a, $w);
+                ++$me->a;
+
+                return $result;
+            }
+        );
+        $wrapped = $c->newInstance('Fixture\Wrapped');
+        $result = $wrapped->inc(41);
+        $this->assertEquals(43, $wrapped->a);
+    }
+
     public function testWrappedByAnnotation()
     {
         $c = new Container();
@@ -55,5 +74,22 @@ class WrapTest extends PHPUnit_Framework_TestCase
         );
         $wrapped = $c->newInstance('Fixture\Wrapped');
         $this->assertEquals(42, $wrapped->qqq(6));
+    }
+
+    public function testWrapStatic()
+    {
+        $c = new Container();
+        $c->wrap(
+            'Fixture\Wrapped',
+            ['psps'],
+            function ($invocation, $args) {
+                list($a) = $args;
+                ++$a;
+
+                return $invocation($a);
+            }
+        );
+        $wrapped = $c->newInstance('Fixture\Wrapped');
+        $this->assertEquals(42, $wrapped::psps(20));
     }
 }

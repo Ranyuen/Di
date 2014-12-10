@@ -24,6 +24,9 @@ $methods = array_filter($methods, function ($method) use ($matchers) {
 $methods = array_map(function ($method) {
     $docComment = $method->getDocComment();
     $visiblity = $method->isPublic() ? 'public' : 'protected';
+    if ($method->isStatic()) {
+        $visiblity = "$visiblity static";
+    }
     $name = $method->getName();
     $params = implode(', ', array_map(
         function ($param) {
@@ -82,7 +85,7 @@ class Tmp<?php echo $uniqid; ?>
         };
         $args = [<?php echo $paramNames; ?>];
 
-        return $interceptor($invocation, $args);
+        return $interceptor($invocation, $args, isset($this) ? $this : null);
     }
 <?php } ?>
 }

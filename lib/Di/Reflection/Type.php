@@ -1,10 +1,10 @@
 <?php
 /**
- * Annotation based simple DI (Dependency Injection) & AOP (Aspect Oriented Programming).
+ * Annotation based simple DI & AOP at PHP.
  *
  * @author    Ranyuen <cal_pone@ranyuen.com>
  * @author    ne_Sachirou <utakata.c4se@gmail.com>
- * @copyright 2014-2014 Ranyuen
+ * @copyright 2014-2015 Ranyuen
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
  */
 namespace Ranyuen\Di\Reflection;
@@ -50,7 +50,7 @@ class Type
             );
         }
 
-        return null;
+        return;
     }
 
     /**
@@ -75,7 +75,7 @@ class Type
             );
         }
 
-        return null;
+        return;
     }
 
     /**
@@ -113,7 +113,7 @@ class Type
         if (in_array($type, $reserved)
             || !preg_match('/^[a-zA-Z0-9_\\x7f-\\xff\\\\]+$/', $type)
         ) {
-            return null;
+            return;
         }
         if ('\\' !== $type[0]) {
             $uses = (new PhpParser())->parseClass($class);

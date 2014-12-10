@@ -1,10 +1,10 @@
 <?php
 /**
- * Annotation based simple DI (Dependency Injection) & AOP (Aspect Oriented Programming).
+ * Annotation based simple DI & AOP at PHP.
  *
  * @author    Ranyuen <cal_pone@ranyuen.com>
  * @author    ne_Sachirou <utakata.c4se@gmail.com>
- * @copyright 2014-2014 Ranyuen
+ * @copyright 2014-2015 Ranyuen
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
  */
 namespace Ranyuen\Di\Annotation;
@@ -30,8 +30,8 @@ abstract class Annotation
             throw new AnnotationException();
         }
 
-        return !!preg_match(
-            "/^[\\s\\/*]*@$annotation(?:\W|$)/m",
+        return false !== preg_match(
+            '#^[\\s/*]*@'.preg_quote($annotation).'(?:\W|$)#m',
             $target->getDocComment()
         );
     }
@@ -53,11 +53,11 @@ abstract class Annotation
         }
         $values = [];
         if (preg_match_all(
-            "/^[\\s\\/*]*@$annotation(?:\\((?:['\"]([^'\"]+)['\"])?\\))?/m",
+            '#^[\\s/*]*@'.preg_quote($annotation).'\\(([\'"])([^\\1]+?)\\1\\)#m',
             $target->getDocComment(),
             $matches
         )) {
-            foreach (explode(',', implode(',', $matches[1])) as $field) {
+            foreach (explode(',', implode(',', $matches[2])) as $field) {
                 if (false === strpos($field, '=')) {
                     $values[] = trim($field);
                 } else {
