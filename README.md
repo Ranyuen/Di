@@ -5,15 +5,9 @@ Ranyuen/Di
 ==
 Annotation based simple DI (Dependency Injection) & AOP (Aspect Oriented Programming) at PHP.
 
-_cf._ [fabpot/Pimple](http://pimple.sensiolabs.org/)
-
-_cf._ [koriym/Ray.Di & Ray.Aop](https://code.google.com/p/rayphp/)
-
-_cf._ [mnapoli/PHP-DI](http://php-di.org/)
-
 Features
 --
-1. Compatible with Pimple 3.
+1. Compatible with [Pimple 3](http://pimple.sensiolabs.org/).
 2. Zero configuration. Injection through reflection and annotations. It's easy!
 3. AOP support.
 
@@ -45,17 +39,17 @@ class Momonga
     }
 }
 
-$container = new Container();
-$container['id'] = 'Sample ID.';
-$container['momonga'] = function ($c) { return new Momonga($c['id']); };
-$container['factory'] = $container->factory(function ($c) { return new Momonga(); });
+$c = new Container();
+$c['id'] = 'Sample ID.';
+$c['momonga'] = function ($c) { return new Momonga($c['id']); };
+$c['factory'] = $c->factory(function ($c) { return new Momonga(); });
 
-var_dump('Sample ID.' === $container['id']);
-var_dump($container['momonga'] instanceof Momonga);
-var_dump($container['momonga'] === $container['momonga']);
-var_dump('Sample ID.' === $container['momonga']->id);
-var_dump($container['factory'] instanceof Momonga);
-var_dump($container['factory'] !== $container['factory']);
+var_dump('Sample ID.' === $c['id']);
+var_dump($c['momonga'] instanceof Momonga);
+var_dump($c['momonga'] === $c['momonga']);
+var_dump('Sample ID.' === $c['momonga']->id);
+var_dump($c['factory'] instanceof Momonga);
+var_dump($c['factory'] !== $c['factory']);
 ?>
 ```
 
@@ -63,8 +57,8 @@ Basic Ray.Di and PHP-DI style _@Inject_ annotations example. Inject to construct
 
 ```php
 <?php
-$container = new Container();
-$container['momonga'] = function ($c) { return new Momonga(); };
+$c = new Container();
+$c['momonga'] = function ($c) { return new Momonga(); };
 
 class Yuraru
 {
@@ -82,7 +76,7 @@ class Yuraru
 }
 
 // We can pass additional args.
-$yuraru = $container->newInstance('Yuraru', ['Sample ID.']);
+$yuraru = $c->newInstance('Yuraru', ['Sample ID.']);
 
 var_dump($yuraru->benri instanceof Momonga);
 var_dump('Sample ID.' === $yuraru->id);
@@ -94,8 +88,8 @@ Inject to properties.
 
 ```php
 <?php
-$container = new Container();
-$container['momonga'] = function ($c) { return new Momonga(); };
+$c = new Container();
+$c['momonga'] = function ($c) { return new Momonga(); };
 
 class Gardea
 {
@@ -104,7 +98,7 @@ class Gardea
 }
 
 $gardea = new Gardea();
-$container->inject($gardea);
+$c->inject($gardea);
 
 var_dump($gardea->momonga instanceof Momonga);
 ?>
@@ -114,8 +108,8 @@ Detect with type hinting through _bind_ method.
 
 ```php
 <?php
-$container = new Container();
-$container->bind('Momonga', 'momonga', function ($c) { return new Momonga(); });
+$c = new Container();
+$c->bind('Momonga', 'momonga', function ($c) { return new Momonga(); });
 
 class Benri
 {
@@ -133,7 +127,7 @@ class Benri
     }
 }
 
-$benri = $container->newInstance('Benri');
+$benri = $c->newInstance('Benri');
 
 var_dump($benri->benri instanceof Momonga);
 var_dump($benri->momonga instanceof Momonga);
@@ -144,8 +138,8 @@ Assign services with another names by _@Named_ annotation.
 
 ```php
 <?php
-$container = new Container();
-$container['momonga'] = function ($c) { return new Momonga(); };
+$c = new Container();
+$c['momonga'] = function ($c) { return new Momonga(); };
 
 class Musasabi
 {
@@ -164,7 +158,7 @@ class Musasabi
     }
 }
 
-$musasabi = $container->newInstance('Musasabi');
+$musasabi = $c->newInstance('Musasabi');
 
 var_dump($musasabi->benri instanceof Momonga);
 var_dump($musasabi->musasabi instanceof Momonga);
@@ -175,11 +169,9 @@ We can use every methods that are defined at Pimple: _factory_, _protect_, _exte
 
 ```php
 <?php
-$container = new Container();
-$container->bind('Momonga', 'momonga', function ($c) { return new Momonga(); });
-$container->bind('Momonga', 'factory',
-    $container->factory(function ($c) { return new Momonga(); })
-);
+$c = new Container();
+$c->bind('Momonga', 'momonga', function ($c) { return new Momonga(); });
+$c->bind('Momonga', 'factory', $c->factory(function ($c) { return new Momonga(); }));
 
 class MomongaFactory
 {
@@ -190,12 +182,12 @@ class MomongaFactory
     public $factory;
 }
 
-$momonga = $container->newInstance('MomongaFactory');
+$momonga = $c->newInstance('MomongaFactory');
 
 var_dump($momonga->momonga instanceof Momonga);
-var_dump($momonga->momonga === $container['momonga']);
+var_dump($momonga->momonga === $c['momonga']);
 var_dump($momonga->factory instanceof Momonga);
-var_dump($momonga->factory !== $container['factory']);
+var_dump($momonga->factory !== $c['factory']);
 ?>
 ```
 
@@ -282,3 +274,4 @@ $tuesday = $c->newInstance('Tuesday');
 var_dump(5 * 7 + 4 + 3 === $tuesday->wednesday(5));
 ?>
 ```
+<!-- vim:ft=php: -->
