@@ -3,7 +3,7 @@
 
 Ranyuen/Di
 ==
-Annotation based simple DI (Dependency Injection) & AOP (Aspect Oriented Programming).
+Annotation based simple DI (Dependency Injection) & AOP (Aspect Oriented Programming) at PHP.
 
 _cf._ [fabpot/Pimple](http://pimple.sensiolabs.org/)
 
