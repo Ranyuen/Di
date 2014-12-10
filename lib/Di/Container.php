@@ -60,8 +60,6 @@ class Container extends Pimple\Container
     private $wraps = [];
     /** @var array */
     private $facades = [];
-    /** @var array */
-    private $injectCache = [];
 
     public function __construct(array $values = [])
     {
@@ -158,35 +156,15 @@ class Container extends Pimple\Container
      * @param object $obj Target object.
      *
      * @return object
+     *
+     * @SuppressWarnings(PHPMD.StaticAccess)
      */
     public function inject($obj)
     {
         if (!is_object($obj)) {
             return $obj;
         }
-        $interfaceName = get_class($obj);
-        if (!isset($this->injectCache[$interfaceName])) {
-            $interface = new \ReflectionClass($interfaceName); // This must not fail.
-            $deps = [];
-            foreach ($interface->getProperties() as $prop) {
-                if (!(new Annotation\Inject())->isInjectable($prop)) {
-                    continue;
-                }
-                $key = $this->detectKey($prop);
-                if (isset($this[$key])) {
-                    $prop->setAccessible(true);
-                    $deps[] = [$prop, $key];
-                }
-            }
-            $injector = function ($obj) use ($deps) {
-                foreach ($deps as $dep) {
-                    list($prop, $key) = $dep;
-                    $prop->setValue($obj, $this[$key]);
-                }
-            };
-            $this->injectCache[$interfaceName] = $injector;
-        }
-        $injector = $this->injectCache[$interfaceName];
+        $injector = InjectorCache::getInject($this, get_class($obj));
         $injector($obj);
 
         return $obj;
@@ -277,7 +255,7 @@ class Container extends Pimple\Container
      *
      * @return string
      */
-    private function detectKey($obj)
+    public function detectKey($obj)
     {
         $key = $obj->getName();
         if ($obj instanceof \ReflectionProperty) {
