@@ -13,7 +13,8 @@
     "require": {
         "php": ">=5.4.0",
         "pimple/pimple": "~3.0",
-        "doctrine/annotations": "~1.2"
+        "doctrine/annotations": "~1.2",
+        "hafriedlander/php-peg": "@dev"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.3",
@@ -23,6 +24,7 @@
         "phing/phing": "~2.8"
     },
     "autoload": {
-        "psr-4": {"Ranyuen\\": "lib/"}
+        "psr-4": {"Ranyuen\\": "lib/"},
+        "classmap": ["res/AnnotationParser.php"]
     }
 }

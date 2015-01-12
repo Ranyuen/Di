@@ -16,14 +16,14 @@ class InjectToProperties
      * Inject with named
      *
      * @Inject
-     * @Named("number=num")
+     * @Named(number=num)
      * @var integer
      */
     public $number;
     /**
      * Inject with @Inject name
      *
-     * @Inject("num")
+     * @Inject(num)
      */
     public $number2;
     /** @var string */

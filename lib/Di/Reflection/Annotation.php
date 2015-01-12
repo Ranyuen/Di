@@ -7,7 +7,7 @@
  * @copyright 2014-2015 Ranyuen
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
  */
-namespace Ranyuen\Di\Annotation;
+namespace Ranyuen\Di\Reflection;
 
 /**
  * Annotation base.
@@ -31,7 +31,7 @@ abstract class Annotation
         }
 
         return false !== preg_match(
-            '#^[\\s/*]*@'.preg_quote($annotation).'(?:\W|$)#m',
+            '#^[\\s/*]*@'.preg_quote($annotation, '#').'(?=\W|$)#m',
             $target->getDocComment()
         );
     }
@@ -52,21 +52,26 @@ abstract class Annotation
             throw new AnnotationException();
         }
         $values = [];
-        if (preg_match_all(
-            '#^[\\s/*]*@'.preg_quote($annotation).'\\(([\'"])([^\\1]+?)\\1\\)#m',
-            $target->getDocComment(),
-            $matches
-        )) {
-            foreach (explode(',', implode(',', $matches[2])) as $field) {
-                if (false === strpos($field, '=')) {
-                    $values[] = trim($field);
-                } else {
-                    $field = explode('=', $field);
-                    $values[trim($field[0])] = trim($field[1]);
-                }
+        $doc = preg_replace('#^[\\s/*]*#m', '', $target->getDocComment());
+        while (true) {
+            $offset = 0;
+            $matches = [];
+            if (!preg_match(
+                '#^@'.preg_quote($annotation, '#').'\\s*(?=\()#m',
+                $doc,
+                $matches,
+                PREG_OFFSET_CAPTURE,
+                $offset
+            )) {
+                return $values;
             }
+            $offset = $matches[0][1] + strlen($matches[0][0]);
+            $doc = substr($doc, $offset);
+            $nValues = (new AnnotationParser($doc))->parse();
+            if (is_null($nValues)) {
+                continue;
+            }
+            $values = array_merge($values, $nValues);
         }
-
-        return $values;
     }
 }

@@ -145,13 +145,13 @@ class Musasabi
 {
     /**
      * @Inject
-     * @Named('musasabi=momonga')
+     * @Named(musasabi=momonga)
      */
     public $musasabi;
 
     public $benri;
 
-    /** @Named('benri=momonga') */
+    /** @Named(benri=momonga) */
     public function __construct($benri)
     {
         $this->benri = $benri;
@@ -252,7 +252,7 @@ Is there no annotation for AOP? Yes we can!
 <?php
 class Tuesday
 {
-    /** @Wrap('advice.sunday,advice.monday') */
+    /** @Wrap('advice.sunday','advice.monday') */
     public function wednesday($day)
     {
         return $day + 3;

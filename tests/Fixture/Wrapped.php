@@ -31,7 +31,7 @@ class Wrapped
         return [$this, $w];
     }
 
-    /** @Wrap('q') */
+    /** @Wrap(q) */
     public function qqq($q)
     {
         return $q;

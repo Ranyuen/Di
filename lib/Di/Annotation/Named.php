@@ -9,6 +9,8 @@
  */
 namespace Ranyuen\Di\Annotation;
 
+use Ranyuen\Di\Reflection\Annotation;
+
 /**
  * Named annotation.
  */

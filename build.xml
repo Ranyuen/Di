@@ -29,4 +29,8 @@
         </exec>
         <exec command="vendor/bin/phpunit" passthru="true" checkreturn="true"/>
     </target>
+
+    <target name="build-peg">
+        <exec command="php vendor/hafriedlander/php-peg/cli.php lib/Di/Reflection/AnnotationParser.peg.inc > res/AnnotationParser.php" passthru="true"/>
+    </target>
 </project>
