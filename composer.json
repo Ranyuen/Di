@@ -24,7 +24,7 @@
         "phing/phing": "~2.8"
     },
     "autoload": {
-        "psr-4": {"Ranyuen\\": "lib/"},
+        "psr-4": {"Ranyuen\\Di\\": "src/"},
         "classmap": ["res/AnnotationParser.php"]
     }
 }

@@ -4,33 +4,33 @@
         <apply executable="php" checkreturn="true">
             <arg value="-l"/>
             <fileset dir=".">
-                <include name="lib/**/*.php"/>
+                <include name="src/**/*.php"/>
                 <include name="res/**/*.php"/>
                 <include name="tests/**/*.php"/>
             </fileset>
         </apply>
         <exec executable="vendor/bin/php-cs-fixer" passthru="true">
             <arg value="fix"/>
-            <arg value="lib/"/>
+            <arg value="src/"/>
         </exec>
         <exec executable="vendor/bin/php-cs-fixer" passthru="true">
             <arg value="fix"/>
             <arg value="tests/"/>
         </exec>
         <exec executable="vendor/bin/phpmd" passthru="true" checkreturn="true">
-            <arg value="lib/"/>
+            <arg value="src/"/>
             <arg value="text"/>
             <arg value="phpmd.xml"/>
         </exec>
         <exec executable="vendor/bin/phpcs" passthru="true" checkreturn="true">
             <arg value="--standard=phpcs.xml"/>
             <arg value="--extensions=php"/>
-            <arg value="lib/"/>
+            <arg value="src/"/>
         </exec>
         <exec command="vendor/bin/phpunit" passthru="true" checkreturn="true"/>
     </target>
 
     <target name="build-peg">
-        <exec command="php vendor/hafriedlander/php-peg/cli.php lib/Di/Reflection/AnnotationParser.peg.inc > res/AnnotationParser.php" passthru="true"/>
+        <exec command="php vendor/hafriedlander/php-peg/cli.php src/Reflection/AnnotationParser.peg.inc > res/AnnotationParser.php" passthru="true"/>
     </target>
 </project>
