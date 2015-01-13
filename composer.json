@@ -1,8 +1,9 @@
 {
     "name": "ranyuen/di",
     "description": "Annotation based simple DI & AOP at PHP.",
-    "version": "0.2.0",
-    "license": "GPLv3",
+    "keywords": ["di", "aop", "annotations", "method invocation", "code gen", "aspect", "dependency injection", "container"],
+    "version": "0.2.1",
+    "license": "GPL-3.0+",
     "authors": [
         {
             "name": "Sachirou Inoue",
