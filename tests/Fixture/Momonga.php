@@ -10,6 +10,7 @@ class Momonga
      * @Named(prop1=prop)
      */
     public $prop1;
+    public $prop2;
 
     /** @Inject('1st') */
     public $injectAtFirstLine;

@@ -31,7 +31,7 @@ abstract class Annotation
             throw new AnnotationException();
         }
 
-        return false !== preg_match(
+        return !!preg_match(
             '#^[\\s/*]*@'.preg_quote($annotation, '#').'(?=\W|$)#m',
             $target->getDocComment()
         );

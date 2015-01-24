@@ -23,12 +23,12 @@ class InjectToConstructor
      *
      * @Named(number=num)
      */
-    public function __construct($arg1, Config $cfg, $number, $arg2, Momonga $momonga)
+    public function __construct($arg1, Config $cfg, $number, $arg2, Momonga $momonga, $test)
     {
-        $this->arg1    = $arg1;
-        $this->cfg     = $cfg;
-        $this->number  = $number;
-        $this->arg2    = $arg2;
-        $this->momonga = $momonga;
+        $this->arg1   = $arg1;
+        $this->cfg    = $cfg;
+        $this->number = $number;
+        $this->arg2   = $arg2;
+        $test->assertSame($test->container[$test->momongaId], $momonga);
     }
 }

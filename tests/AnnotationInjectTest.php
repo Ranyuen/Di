@@ -27,6 +27,11 @@ class AnnotationInjectTest extends PHPUnit_Framework_TestCase
                 $this->interface->getProperty('prop1')
             )
         );
+        $this->assertFalse(
+            (new Inject())->isInjectable(
+                $this->interface->getProperty('prop2')
+            )
+        );
         $this->assertTrue(
             (new Inject())->isInjectable(
                 $this->interface->getProperty('injectAtFirstLine')

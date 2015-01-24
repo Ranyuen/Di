@@ -13,8 +13,8 @@ use Ranyuen\Di\Container;
 class InjectionTest extends PHPUnit_Framework_TestCase
 {
     /** @var Container */
-    private $container;
-    private $momongaId = 'iTyxdYeAnSP53tZq';
+    public $container;
+    public $momongaId = 'iTyxdYeAnSP53tZq';
 
     public function __construct()
     {
@@ -36,26 +36,26 @@ class InjectionTest extends PHPUnit_Framework_TestCase
     {
         $obj = $this->container->newInstance(
             'Fixture\InjectToConstructor',
-            ['arg1', 'arg2']
+            ['arg1', 'arg2', $this]
         );
         $this->assertEquals('arg1', $obj->arg1);
         $this->assertSame($this->container['cfg'], $obj->cfg);
         $this->assertEquals($this->container['num'], $obj->number);
         $this->assertEquals('arg2', $obj->arg2);
-        $this->assertSame($this->container[$this->momongaId], $obj->momonga);
+        $this->assertNull($obj->momonga);
     }
 
     public function testInjectToConstructorWithKeyword()
     {
         $obj = $this->container->newInstance(
             'Fixture\InjectToConstructor',
-            ['arg2' => 'arg2', 'arg1' => 'arg1']
+            ['arg2' => 'arg2', 'arg1' => 'arg1', 'test' => $this]
         );
         $this->assertEquals('arg1', $obj->arg1);
         $this->assertSame($this->container['cfg'], $obj->cfg);
         $this->assertEquals($this->container['num'], $obj->number);
         $this->assertEquals('arg2', $obj->arg2);
-        $this->assertSame($this->container[$this->momongaId], $obj->momonga);
+        $this->assertNull($obj->momonga);
     }
 
     public function testInjectToProperties()
