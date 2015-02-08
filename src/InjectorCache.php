@@ -15,36 +15,34 @@ namespace Ranyuen\Di;
  */
 class InjectorCache
 {
-    private static $cache;
+    /** @var Container */
+    private $c;
+    /** @var array */
+    private $cache = [];
 
-    /**
-     * Remove cache reference of the container.
-     *
-     * @param Container $c Container.
-     *
-     * @return void
-     */
-    public static function removeCache(Container $c)
+    public function __construct(Container $c)
     {
-        if (isset(self::$cache[$c])) {
-            unset(self::$cache[$c]);
-        }
+        $this->c = $c;
     }
 
     /**
      * Get inject injetor.
      *
-     * @param Container $c         Container.
-     * @param string    $className Class name.
+     * @param string $className Class name.
      *
      * @return callable
      *
      * @throws \ReflectionException The class doesn't exist.
      */
-    public static function getInject(Container $c, $className)
+    public function getInject($className)
     {
-        $cache = self::initCache($c);
-        if (!isset($cache['inject'][$className])) {
+        if (!isset($this->cache[$className])) {
+            $this->cache[$className] = [
+                'inject'      => null,
+                'newInstance' => null,
+            ];
+        }
+        if (!$this->cache[$className]['inject']) {
             $class = new \ReflectionClass($className);
             $annotation = new Annotation\Inject();
             $deps = [];
@@ -52,55 +50,60 @@ class InjectorCache
                 if (!$annotation->isInjectable($prop)) {
                     continue;
                 }
-                $key = self::detectKey($c, $prop);
-                if (isset($c[$key])) {
+                $key = self::detectKey($prop);
+                if (isset($this->c[$key])) {
                     $prop->setAccessible(true);
                     $deps[] = [$prop, $key];
                 }
             }
-            $injector = function ($obj) use ($c, $deps) {
+            $injector = function ($obj) use ($deps) {
                 foreach ($deps as $dep) {
                     list($prop, $key) = $dep;
-                    $prop->setValue($obj, $c[$key]);
+                    $prop->setValue($obj, $this->c[$key]);
                 }
             };
-            $cache['inject'][$className] = $injector;
-            self::$cache[$c] = $cache;
+            $this->cache[$className]['inject'] = $injector;
         }
 
-        return $cache['inject'][$className];
+        return $this->cache[$className]['inject'];
     }
 
     /**
-     * @param Container $c         Container.
-     * @param string    $className Class name.
+     * Get newInstance injector.
+     *
+     * @param string $className Class name.
      *
      * @return callable
      *
      * @throws \ReflectionException The class doesn't exist.
      */
-    public static function getNewInstance(Container $c, $className)
+    public function getNewInstance($className)
     {
-        $cache = self::initCache($c);
-        if (!isset($cache['newInstance'][$className])) {
+        if (!isset($this->cache[$className])) {
+            $this->cache[$className] = [
+                'inject'      => null,
+                'newInstance' => null,
+            ];
+        }
+        if (!$this->cache[$className]['newInstance']) {
             $class = new \ReflectionClass($className);
             if ($class->hasMethod('__construct')) {
                 $deps = [];
                 $method = $class->getMethod('__construct');
                 $params = $method->getParameters();
                 foreach ($params as $param) {
-                    $key = self::detectKey($c, $param);
-                    if (isset($c[$key])) {
+                    $key = self::detectKey($param);
+                    if (isset($this->c[$key])) {
                         $deps[$param->getName()] = $key;
                     }
                 }
-                $injector = function ($args) use ($c, $class, $params, $deps) {
+                $injector = function ($args) use ($class, $params, $deps) {
                     foreach ($params as $i => $param) {
                         if (isset($args[$key = $param->getName()])) {
                             array_splice($args, $i, 0, [$args[$key]]);
                         } elseif (isset($deps[$param->getName()])) {
                             $key = $deps[$param->getName()];
-                            array_splice($args, $i, 0, [$c[$key]]);
+                            array_splice($args, $i, 0, [$this->c[$key]]);
                         }
                     }
 
@@ -111,26 +114,10 @@ class InjectorCache
                     return $class->newInstanceArgs();
                 };
             }
-            $cache['newInstance'][$className] = $injector;
-            self::$cache[$c] = $cache;
+            $this->cache[$className]['newInstance'] = $injector;
         }
 
-        return $cache['newInstance'][$className];
-    }
-
-    private static function initCache(Container $c)
-    {
-        if (is_null(self::$cache)) {
-            self::$cache = new \SplObjectStorage();
-        }
-        if (!isset(self::$cache[$c])) {
-            self::$cache[$c] = [
-                'inject'      => [],
-                'newInstance' => [],
-            ];
-        }
-
-        return self::$cache[$c];
+        return $this->cache[$className]['newInstance'];
     }
 
     /**
@@ -142,12 +129,11 @@ class InjectorCache
      * 3. Type hinting and type of var annotation.
      * 4. Variable name.
      *
-     * @param Container                                $c   Container.
      * @param \ReflectionParameter|\ReflectionProperty $obj Target.
      *
      * @return string
      */
-    private static function detectKey(Container $c, $obj)
+    private function detectKey($obj)
     {
         $key = $obj->getName();
         if ($obj instanceof \ReflectionProperty) {
@@ -163,9 +149,9 @@ class InjectorCache
         if (isset($named[$key])) {
             $key = $named[$key];
         } elseif (($type = (new Reflection\Type())->getType($obj))
-            && isset($c->classes[$type])
+            && isset($this->c->classes[$type])
         ) {
-            $key = $c->classes[$type];
+            $key = $this->c->classes[$type];
         }
 
         return $key;

@@ -62,23 +62,15 @@ class Container extends Pimple\Container
     private $wraps = [];
     /** @var array */
     private $facades = [];
+    /** @var InjectorCache */
+    private $cache;
 
     public function __construct(array $values = [])
     {
         parent::__construct($values);
+        $this->cache = new InjectorCache($this);
         if (!self::$facade) {
             self::setAsFacade($this);
-        }
-    }
-
-    /**
-     * @SuppressWarnings(PHPMD.StaticAccess)
-     */
-    public function __destruct()
-    {
-        InjectorCache::removeCache($this);
-        if (is_callable('parent::__destruct')) {
-            parent::__destruct();
         }
     }
 
@@ -177,7 +169,7 @@ class Container extends Pimple\Container
         if (!is_object($obj)) {
             return $obj;
         }
-        $injector = InjectorCache::getInject($this, get_class($obj)); // This must not fail.
+        $injector = $this->cache->getInject(get_class($obj)); // This must not fail.
         $injector($obj);
 
         return $obj;
@@ -203,7 +195,7 @@ class Container extends Pimple\Container
             $this->wrapClass($class);
             $class = $this->wraps[$class];
         }
-        $injector = InjectorCache::getNewInstance($this, $class);
+        $injector = $this->cache->getNewInstance($class);
         $obj = $injector($args);
         $this->inject($obj);
 
