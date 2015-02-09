@@ -205,8 +205,8 @@ class Dispatcher
         list($class, $method) = explode('@', $func);
         $invocation = function () use ($thisObj, $class, $method) {
             if (!is_object($thisObj) || !($thisObj instanceof $class)) {
-                if ($thisObj = $this->c[$class]) {
-                    null;
+                if (isset($this->c[$class])) {
+                    $thisObj = $this->c[$class];
                 } elseif ($thisObj = $this->c->getByType($class)) {
                     null;
                 } else {
