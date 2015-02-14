@@ -6,6 +6,7 @@
  * @author    ne_Sachirou <utakata.c4se@gmail.com>
  * @copyright 2014-2015 Ranyuen
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
+ * @link      https://github.com/Ranyuen/Di
  */
 
 namespace Ranyuen\Di;
@@ -15,9 +16,17 @@ namespace Ranyuen\Di;
  */
 class InjectorCache
 {
-    /** @var Container */
+    /**
+     * DI container.
+     *
+     * @var Container
+     */
     private $c;
-    /** @var array */
+    /**
+     * Cache.
+     *
+     * @var array
+     */
     private $cache = [];
 
     public function __construct(Container $c)

@@ -6,6 +6,7 @@
  * @author    ne_Sachirou <utakata.c4se@gmail.com>
  * @copyright 2014-2015 Ranyuen
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
+ * @link      https://github.com/Ranyuen/Di
  */
 
 namespace Ranyuen\Di\Dispatcher;
@@ -56,6 +57,8 @@ class Dispatcher
     }
 
     /**
+     * Set an argument with the name.
+     *
      * @param string $name Key.
      * @param mixed  $val  Value.
      *
@@ -67,6 +70,8 @@ class Dispatcher
     }
 
     /**
+     * Set arguments by the assoc.
+     *
      * @param array|ArrayAccess $array Key-values.
      *
      * @return void
@@ -85,6 +90,8 @@ class Dispatcher
     }
 
     /**
+     * Set an argument with the class name.
+     *
      * @param string $class Class name.
      * @param mixed  $val   Value.
      *
@@ -106,6 +113,8 @@ class Dispatcher
     }
 
     /**
+     * Dispatch the function.
+     *
      * @param string|callable $func    Invokable.
      * @param array           $args    Arguments.
      * @param ojbect          $thisObj This of the method.

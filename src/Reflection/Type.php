@@ -6,6 +6,7 @@
  * @author    ne_Sachirou <utakata.c4se@gmail.com>
  * @copyright 2014-2015 Ranyuen
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
+ * @link      https://github.com/Ranyuen/Di
  */
 
 namespace Ranyuen\Di\Reflection;
@@ -33,12 +34,7 @@ class Type
         return $this->getTypeOfProperty($target);
     }
 
-    /**
-     * @param \ReflectionProperty $prop Target property.
-     *
-     * @return string|null
-     */
-    private function getTypeOfProperty($prop)
+    private function getTypeOfProperty(\ReflectionProperty $prop)
     {
         if (preg_match(
             '/^[\\s\\/*]*@var\\s+(\S+)/m',
@@ -54,12 +50,7 @@ class Type
         return;
     }
 
-    /**
-     * @param \ReflectionParameter $param Target parameter.
-     *
-     * @return string|null
-     */
-    private function getTypeOfParameter($param)
+    private function getTypeOfParameter(\ReflectionParameter $param)
     {
         if ($class = $param->getClass()) {
             return $class->name;
@@ -82,7 +73,7 @@ class Type
     /**
      * Get Full name of the type.
      *
-     * https://github.com/mnapoli/PhpDocReader
+     * Inspired from https://github.com/mnapoli/PhpDocReader
      *
      * @param string           $type  Short type name.
      * @param \ReflectionClass $class Declared class.
@@ -131,11 +122,6 @@ class Type
         return ltrim($type, '\\');
     }
 
-    /**
-     * @param string $type Class or interface name.
-     *
-     * @return boolean
-     */
     private function isTypeExists($type)
     {
         return class_exists($type) || interface_exists($type);

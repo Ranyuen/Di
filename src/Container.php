@@ -6,6 +6,7 @@
  * @author    ne_Sachirou <utakata.c4se@gmail.com>
  * @copyright 2014-2015 Ranyuen
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
+ * @link      https://github.com/Ranyuen/Di
  */
 
 namespace Ranyuen\Di;
@@ -17,9 +18,17 @@ use Pimple;
  */
 class Container extends Pimple\Container
 {
-    /** @var array */
+    /**
+     * Method interceptors.
+     *
+     * @var array
+     */
     public static $interceptors = [];
-    /** @var Container */
+    /**
+     * Singleton facades.
+     *
+     * @var Container
+     */
     public static $facade;
 
     /**
@@ -55,14 +64,30 @@ class Container extends Pimple\Container
         self::$facade = $c;
     }
 
-    /** @var array */
+    /**
+     * Typed bindings.
+     *
+     * @var array
+     */
     public $classes = [];
 
-    /** @var array */
+    /**
+     * AOP wrappers.
+     *
+     * @var array
+     */
     private $wraps = [];
-    /** @var array */
+    /**
+     * Singleton facades.
+     *
+     * @var array
+     */
     private $facades = [];
-    /** @var InjectorCache */
+    /**
+     * Cache.
+     *
+     * @var InjectorCache
+     */
     private $cache;
 
     public function __construct(array $values = [])
@@ -237,13 +262,6 @@ class Container extends Pimple\Container
         return $this[$contentName];
     }
 
-    /**
-     * @param string $class Will be wrapped.
-     *
-     * @return void
-     *
-     * @throws \ReflectionException The class doesn't exist.
-     */
     private function wrapClass($class)
     {
         $class = new \ReflectionClass($class);

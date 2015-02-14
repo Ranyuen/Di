@@ -22,6 +22,11 @@
             <arg value="text"/>
             <arg value="phpmd.xml"/>
         </exec>
+        <exec executable="vendor/bin/phpcbf" passthru="true">
+            <arg value="--standard=phpcs.xml"/>
+            <arg value="--extensions=php"/>
+            <arg value="src/"/>
+        </exec>
         <exec executable="vendor/bin/phpcs" passthru="true" checkreturn="true">
             <arg value="--standard=phpcs.xml"/>
             <arg value="--extensions=php"/>

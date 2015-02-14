@@ -36,9 +36,14 @@
     <!-- PEAR -->
     <rule ref="PEAR.Classes"/>
     <rule ref="PEAR.Commenting">
-        <exclude name="PEAR.Commenting.ClassComment.MissingTag"/>
+        <exclude name="PEAR.Commenting.ClassComment.MissingAuthorTag"/>
+        <exclude name="PEAR.Commenting.ClassComment.MissingCategoryTag"/>
+        <exclude name="PEAR.Commenting.ClassComment.MissingLicenseTag"/>
+        <exclude name="PEAR.Commenting.ClassComment.MissingLinkTag"/>
+        <exclude name="PEAR.Commenting.ClassComment.MissingPackageTag"/>
+        <exclude name="PEAR.Commenting.FileComment.MissingCategoryTag"/>
+        <exclude name="PEAR.Commenting.FileComment.MissingPackageTag"/>
         <exclude name="PEAR.Commenting.FileComment.MissingVersion"/>
-        <exclude name="PEAR.Commenting.FileComment.MissingTag"/>
         <exclude name="PEAR.Commenting.FunctionComment.SpacingBeforeTags"/>
         <exclude name="PEAR.Commenting.FunctionComment.Missing"/>
     </rule>
