@@ -169,7 +169,7 @@ class Container extends Pimple\Container
 
             return ob_get_clean();
         };
-        //$render = $render->bindTo(null); // Closure::bindTo isn't impl in HHVM.
+        $render = $render->bindTo(null);
         $wrappedClass = $render(file_get_contents('res/WrappedClass.php'));
         $dir = sys_get_temp_dir();
         $file = fopen("$dir/$uniqid", 'w');
