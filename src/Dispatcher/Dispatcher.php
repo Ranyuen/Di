@@ -45,71 +45,17 @@ class Dispatcher
     }
 
     private $c;
-    private $named  = [];
-    private $nameds = [];
-    private $typed  = [];
+    private $dispatcher;
 
     public function __construct(Container $c = null)
     {
-        if ($c) {
-            $this->c = $c;
-        }
+        $this->c          = $c;
+        $this->dispatcher = new NakedDispatcher($c);
     }
 
-    /**
-     * Set an argument with the name.
-     *
-     * @param string $name Key.
-     * @param mixed  $val  Value.
-     *
-     * @return void
-     */
-    public function setNamedArg($name, $val)
+    public function __call($name, $args)
     {
-        $this->named[$name] = $val;
-    }
-
-    /**
-     * Set arguments by the assoc.
-     *
-     * @param array|ArrayAccess $array Key-values.
-     *
-     * @return void
-     */
-    public function setNamedArgs($array)
-    {
-        if (is_array($array)) {
-            $this->named = array_merge($this->named, $array);
-
-            return;
-        }
-        if (!($array instanceof \ArrayAccess)) {
-            throw new Exception('the arg must implement ArrayAccess.');
-        }
-        $this->nameds[] = $array;
-    }
-
-    /**
-     * Set an argument with the class name.
-     *
-     * @param string $class Class name.
-     * @param mixed  $val   Value.
-     *
-     * @return void
-     */
-    public function setTypedArg($class, $val)
-    {
-        if (!class_exists($class) && !interface_exists($class)) {
-            return;
-        }
-        $this->typed[$class] = $val;
-        // foreach(array_merge(
-        //     class_implements($class),
-        //     class_parents($class),
-        //     class_uses($class)
-        // ) as $parent) {
-        //     $this->typed[$parent] = $val;
-        // }
+        return call_user_func_array([$this->dispatcher, $name], $args);
     }
 
     /**
@@ -123,110 +69,38 @@ class Dispatcher
      */
     public function invoke($func, array $args = [], $thisObj = null)
     {
-        list($func, $params) = $this->toCallable($func, $thisObj);
-        foreach ($params as $i => $param) {
-            if (is_null($var = $this->getByParam($param))) {
-                continue;
-            }
-            array_splice($args, $i, 0, [$var]);
-        }
-
-        return call_user_func_array($func, $args);
-    }
-
-    /**
-     * Get a value from the containers by the ReflectionParameter.
-     *
-     * @param \ReflectionParameter $param Key.
-     *
-     * @return mixed|null
-     */
-    public function getByParam(\ReflectionParameter $param)
-    {
-        if ($type = $param->getClass()) {
-            $type = $type->name;
-            if (isset($this->typed[$type])) {
-                return $this->typed[$type];
-            }
-            if (!is_null($var = $this->c->getByType($type))) {
-                return $var;
-            }
-        }
-        $name = $param->name;
-        if (isset($this->named[$name])) {
-            return $this->named[$name];
-        }
-        foreach ($this->nameds as $named) {
-            if (isset($named[$name])) {
-                return $named[$name];
-            }
-        }
-        if (isset($this->c[$name])) {
-            return $this->c[$name];
-        }
+        $func = $this->toCallable($func, $thisObj);
+        return $this->dispatcher->invoke($func, $args);
     }
 
     private function toCallable($func, $thisObj = null)
     {
         if (is_callable($func)) {
-            return $this->callableToCollable($func);
+            return $func;
         }
         if (self::isRegex($func)) {
-            return $this->regexToCallable($func);
+            return function ($subject, array &$matches = null, $flags = 0, $offset = 0) use ($func) {
+                return preg_match($func, $subject, $matches, $flags, $offset);
+            };
         }
         if (is_string($func) && (false !== strpos($func, '@'))) {
-            return $this->methodToCallable($func, $thisObj);
+            list($interface, $method) = explode('@', $func);
+            $invocation = function () use ($thisObj, $interface, $method) {
+                if (!is_object($thisObj) || !($thisObj instanceof $interface)) {
+                    if (isset($this->c[$interface])) {
+                        $thisObj = $this->c[$interface];
+                    } elseif ($thisObj = $this->c->getByType($interface)) {
+                        null;
+                    } else {
+                        $thisObj = $this->c->newInstance($interface);
+                    }
+                }
+
+                return call_user_func_array([$thisObj, $method], func_get_args());
+            };
+            $params = (new \ReflectionMethod($interface, $method))->getParameters();
+            return new ParametrizedInvokable($invocation, $params);
         }
         throw new Exception('Not a callable: '.(string) $func);
-    }
-
-    private function callableToCollable($func)
-    {
-        if ($func instanceof \Closure
-            || (is_string($func) && function_exists($func))
-        ) {
-            $params = (new \ReflectionFunction($func))->getParameters();
-        } elseif (is_array($func)) {
-            list($class, $method) = $func;
-            if (is_object($class)) {
-                $class = get_class($class);
-            }
-            $params = (new \ReflectionMethod($class, $method))->getParameters();
-        } else {
-            $params = (new \ReflectionMethod($func))->getParameters();
-        }
-
-        return [$func, $params];
-    }
-
-    private function regexToCallable($pattern)
-    {
-        $invocation = function ($subject, array &$matches = null, $flags = 0, $offset = 0) use ($pattern) {
-            return preg_match($pattern, $subject, $matches, $flags, $offset);
-        };
-        $params = (new \ReflectionFunction($invocation))->getParameters();
-
-        return [$invocation, $params];
-    }
-
-    private function methodToCallable($func, $thisObj = null)
-    {
-        list($class, $method) = explode('@', $func);
-        $invocation = function () use ($thisObj, $class, $method) {
-            if (!is_object($thisObj) || !($thisObj instanceof $class)) {
-                if (isset($this->c[$class])) {
-                    $thisObj = $this->c[$class];
-                } elseif ($thisObj = $this->c->getByType($class)) {
-                    null;
-                } else {
-                    $thisObj = $this->c->newInstance($class);
-                }
-            }
-
-            return call_user_func_array([$thisObj, $method], func_get_args());
-        };
-        $params = (new \ReflectionMethod($class, $method))->getParameters();
-
-        return [$invocation, $params];
     }
 }

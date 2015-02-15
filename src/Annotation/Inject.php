@@ -39,8 +39,8 @@ class Inject extends Annotation
      */
     public function getInject($target)
     {
-        $values = $this->getValues($target, 'Inject');
+        $vals = $this->getValues($target, 'Inject');
 
-        return isset($values[0]) ? $values[0] : null;
+        return isset($vals[0]) ? $vals[0] : null;
     }
 }

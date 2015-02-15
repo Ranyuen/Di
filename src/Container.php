@@ -90,9 +90,9 @@ class Container extends Pimple\Container
      */
     private $cache;
 
-    public function __construct(array $values = [])
+    public function __construct(array $vals = [])
     {
-        parent::__construct($values);
+        parent::__construct($vals);
         $this->cache = new InjectorCache($this);
         if (!self::$facade) {
             self::setAsFacade($this);
@@ -105,17 +105,26 @@ class Container extends Pimple\Container
      * @param string $interface The class name of the value.
      * @param string $key       The unique identifier for the parameter or
      *                          object.
-     * @param mixed  $value     The value of the parameter or a closure to
+     * @param mixed  $val       The value of the parameter or a closure to
      *                          define an object.
      *
      * @return this
      *
      * @throws \RuntimeException Prevent override of a frozen service.
      */
-    public function bind($interface, $key, $value)
+    public function bind($interface, $key, $val)
     {
-        $this[$key] = $value;
+        $this[$key] = $val;
         $this->classes[$interface] = $key;
+        foreach (array_merge(
+            class_implements($interface),
+            class_parents($interface),
+            class_uses($interface)
+        ) as $parent) {
+            if (!isset($this->classes[$parent])) {
+                $this->classes[$parent] = $val;
+            }
+        }
 
         return $this;
     }
@@ -203,8 +212,8 @@ class Container extends Pimple\Container
     /**
      * Create a new instance and injection.
      *
-     * @param string $class Create an instance.
-     * @param array  $args  Arguments which doesn't inject.
+     * @param string $interface Create an instance.
+     * @param array  $args      Arguments which doesn't inject.
      *
      * @return object
      *
@@ -212,15 +221,15 @@ class Container extends Pimple\Container
      *
      * @SuppressWarnings(PHPMD.StaticAccess)
      */
-    public function newInstance($class, $args = [])
+    public function newInstance($interface, $args = [])
     {
-        if (isset($this->wraps[$class])) {
-            $class = $this->wraps[$class];
+        if (isset($this->wraps[$interface])) {
+            $interface = $this->wraps[$interface];
         } else {
-            $this->wrapClass($class);
-            $class = $this->wraps[$class];
+            $this->wrapClass($interface);
+            $interface = $this->wraps[$interface];
         }
-        $injector = $this->cache->getNewInstance($class);
+        $injector = $this->cache->getNewInstance($interface);
         $obj = $injector($args);
         $this->inject($obj);
 
@@ -262,15 +271,15 @@ class Container extends Pimple\Container
         return $this[$contentName];
     }
 
-    private function wrapClass($class)
+    private function wrapClass($interface)
     {
-        $class = new \ReflectionClass($class);
-        $wraps = (new Annotation\Wrap())->gatherWraps($class);
+        $interface = new \ReflectionClass($interface);
+        $wraps = (new Annotation\Wrap())->gatherWraps($interface);
         foreach ($wraps as $advice => $methods) {
-            $this->wrap($class->getName(), $methods, $this[$advice]);
+            $this->wrap($interface->getName(), $methods, $this[$advice]);
         }
-        if (!isset($this->wraps[$class->getName()])) {
-            $this->wraps[$class->getName()] = $class->getName();
+        if (!isset($this->wraps[$interface->getName()])) {
+            $this->wraps[$interface->getName()] = $interface->getName();
         }
     }
 }

@@ -53,7 +53,7 @@ abstract class Annotation
         if (!is_callable([$target, 'getDocComment'])) {
             throw new AnnotationException();
         }
-        $values = [];
+        $vals = [];
         $doc = preg_replace('#^[\\s/*]*#m', '', $target->getDocComment());
         while (true) {
             $offset = 0;
@@ -65,7 +65,7 @@ abstract class Annotation
                 PREG_OFFSET_CAPTURE,
                 $offset
             )) {
-                return $values;
+                return $vals;
             }
             $offset = $matches[0][1] + strlen($matches[0][0]);
             $doc = substr($doc, $offset);
@@ -73,7 +73,7 @@ abstract class Annotation
             if (is_null($nValues)) {
                 continue;
             }
-            $values = array_merge($values, $nValues);
+            $vals = array_merge($vals, $nValues);
         }
     }
 }
