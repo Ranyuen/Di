@@ -12,6 +12,7 @@
 namespace Ranyuen\Di\Dispatcher;
 
 use Ranyuen\Di\Container;
+use Ranyuen\Di\Reflection\KeyReflector;
 
 /**
  * Dispatcher service.
@@ -98,10 +99,11 @@ class NakedDispatcher
     {
         $params = $this->getParams($func);
         foreach ($params as $i => $param) {
-            if (!$this->hasParametrizedValue($param, $var)) {
-                continue;
+            if (isset($args[$param->name])) {
+                array_splice($args, $i, 0, [$args[$param->name]]);
+            } elseif ($this->hasParametrizedValue($param, $var)) {
+                array_splice($args, $i, 0, [$var]);
             }
-            array_splice($args, $i, 0, [$var]);
         }
 
         return call_user_func_array($func, $args);
@@ -124,9 +126,6 @@ class NakedDispatcher
                 $result = $this->typed[$type];
                 return true;
             }
-            if (!is_null($result = $this->c->getByType($type))) {
-                return true;
-            }
         }
         $name = $param->name;
         if (isset($this->named[$name])) {
@@ -139,8 +138,8 @@ class NakedDispatcher
                 return true;
             }
         }
-        if (isset($this->c[$name])) {
-            $result = $this->c[$name];
+        if (isset($this->c[$key = (new KeyReflector($this->c))->detectKey($param)])) {
+            $result = $this->c[$key];
             return true;
         }
         return false;
