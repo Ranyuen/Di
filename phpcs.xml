@@ -44,8 +44,8 @@
         <exclude name="PEAR.Commenting.FileComment.MissingCategoryTag"/>
         <exclude name="PEAR.Commenting.FileComment.MissingPackageTag"/>
         <exclude name="PEAR.Commenting.FileComment.MissingVersion"/>
-        <exclude name="PEAR.Commenting.FunctionComment.SpacingBeforeTags"/>
         <exclude name="PEAR.Commenting.FunctionComment.Missing"/>
+        <exclude name="PEAR.Commenting.FunctionComment.SpacingBeforeTags"/>
     </rule>
     <rule ref="PEAR.ControlStructures">
         <exclude name="PEAR.Formatting.MultiLineAssignment.Indent"/>
@@ -58,7 +58,7 @@
         <exclude name="PEAR.NamingConventions.ValidVariableName.PrivateNoUnderscore"/>
     </rule>
     <rule ref="PEAR.WhiteSpace">
-        <exclude name="PEAR.WhiteSpace.ScopeIndent.Incorrect"/>
+        <exclude name="PEAR.WhiteSpace.ScopeIndent.IncorrectExact"/>
     </rule>
 
     <!-- PHPCS -->

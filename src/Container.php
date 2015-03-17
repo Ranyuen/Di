@@ -56,7 +56,7 @@ class Container extends Pimple\Container
 
                         return ob_get_clean();
                     };
-                    $facadeClass = $render(file_get_contents('res/FacadeClass.php'));
+                    $facadeClass = $render(file_get_contents(__dir__.'/../res/FacadeClass.php'));
                     eval('?>'.$facadeClass);
                 }
             );
@@ -179,7 +179,7 @@ class Container extends Pimple\Container
             return ob_get_clean();
         };
         $render = $render->bindTo(null);
-        $wrappedClass = $render(file_get_contents('res/WrappedClass.php'));
+        $wrappedClass = $render(file_get_contents(__dir__.'/../res/WrappedClass.php'));
         $dir = sys_get_temp_dir();
         $file = fopen("$dir/$uniqid", 'w');
         fwrite($file, $wrappedClass);
