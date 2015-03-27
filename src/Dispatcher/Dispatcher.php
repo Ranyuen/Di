@@ -73,6 +73,20 @@ class Dispatcher
         return $this->dispatcher->invoke($func, $args);
     }
 
+    /**
+     * Reflect parameters or the function.
+     *
+     * @param string|callable $func    Invokable.
+     * @param ojbect          $thisObj This of the method.
+     *
+     * @return \ReflectionParameter[]
+     */
+    public function getParameters($func, $thisObj = null)
+    {
+        $func = $this->toCallable($func, $thisObj);
+        return $this->dispatcher->getParameters($func);
+    }
+
     private function toCallable($func, $thisObj = null)
     {
         if (is_callable($func)) {

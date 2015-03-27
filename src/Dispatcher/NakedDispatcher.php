@@ -97,7 +97,7 @@ class NakedDispatcher
      */
     public function invoke(callable $func, array $args = [])
     {
-        $params = $this->getParams($func);
+        $params = $this->getParameters($func);
         foreach ($params as $i => $param) {
             if (isset($args[$param->name])) {
                 array_splice($args, $i, 0, [$args[$param->name]]);
@@ -145,7 +145,7 @@ class NakedDispatcher
         return false;
     }
 
-    private function getParams(callable $func)
+    public function getParameters(callable $func)
     {
         if ($func instanceof ParametrizedInvokable) {
             return $func->getParameters();
