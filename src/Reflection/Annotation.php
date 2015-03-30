@@ -29,7 +29,7 @@ abstract class Annotation
     protected function hasAnnotation($target, $annotation)
     {
         if (!is_callable([$target, 'getDocComment'])) {
-            throw new AnnotationException();
+            throw new AnnotationException('Not annotatalbe: '.(string) $target);
         }
 
         return !!preg_match(
@@ -39,19 +39,19 @@ abstract class Annotation
     }
 
     /**
-     * Get the annotation values.
+     * Get the annotation values. Keep separated each annotations.
      *
      * @param mixed  $target     Target.
      * @param string $annotation Annotation name.
      *
-     * @return array
+     * @return array[]
      *
      * @throws AnnotationException The target isn't reflectable.
      */
-    protected function getValues($target, $annotation)
+    protected function getEachValue($target, $annotation)
     {
-        if (!is_callable([$target, 'getDocComment'])) {
-            throw new AnnotationException();
+        if (!$this->hasAnnotation($target, $annotation)) {
+            return null;
         }
         $vals = [];
         $doc = preg_replace('#^[\\s/*]*#m', '', $target->getDocComment());
@@ -70,10 +70,33 @@ abstract class Annotation
             $offset = $matches[0][1] + strlen($matches[0][0]);
             $doc = substr($doc, $offset);
             $nValues = (new AnnotationParser($doc))->parse();
-            if (is_null($nValues)) {
-                continue;
+            if (!is_null($nValues)) {
+                $vals[] = $nValues;
             }
-            $vals = array_merge($vals, $nValues);
         }
+    }
+
+    /**
+     * Get the annotation values. Merge each annotations.
+     *
+     * @param mixed  $target     Target.
+     * @param string $annotation Annotation name.
+     *
+     * @return array
+     *
+     * @throws AnnotationException The target isn't reflectable.
+     */
+    protected function getValues($target, $annotation)
+    {
+        if (!$this->hasAnnotation($target, $annotation)) {
+            return null;
+        }
+        return array_reduce(
+            $this->getEachValue($target, $annotation),
+            function ($carry, $val) {
+                return array_merge($carry, $val);
+            },
+            []
+        );
     }
 }

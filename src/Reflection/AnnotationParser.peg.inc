@@ -23,12 +23,12 @@ class AnnotationParser extends Parser\Basic
 {
 /*!* Annotation
 
-Main: '(' > Array > ')'
+Main: '(' whitespace? Array whitespace? ')'
     function Array(&$result, $sub) {
         $result['val'] = $sub['val'];
     }
 
-Array: Element ( > ',' > Element ) * ( > ',' ) ?
+Array: Element ( whitespace? ',' whitespace? Element ) * ( whitespace? ',' ) ?
     function Element(&$result, $sub) {
         if (!isset($result['val'])) {
             $result['val'] = [];
@@ -49,7 +49,7 @@ Element: KeyValue | Value
         $result['val'] = $sub['val'];
     }
 
-KeyValue: Key > '=' > Value
+KeyValue: Key whitespace? '=' whitespace? Value
     function Key(&$result, $sub) {
         $result['key'] = $sub['val'];
     }
@@ -65,7 +65,7 @@ Key: Symbol | String
         $result['val'] = substr($sub['text'], 1, -1);
     }
 
-Value: Symbol | String | Number | ( '{' > Array > '}' )
+Value: Symbol | String | Number | ( '{' whitespace? Array whitespace? '}' )
     function Symbol(&$result, $sub) {
         $result['val'] = $sub['text'];
     }
@@ -104,6 +104,8 @@ BinInt: /0b[01]+/
 OctInt: /0[0-7]+/
 
 Float: /[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?/
+
+whitespace: /\s+/
 
 */
 

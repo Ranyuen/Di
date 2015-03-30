@@ -21,7 +21,7 @@ use hafriedlander\Peg\Parser;
  */
 class AnnotationParser extends Parser\Basic
 {
-/* Main: '(' > Array > ')' */
+/* Main: '(' whitespace? Array whitespace? ')' */
 protected $match_Main_typestack = array('Main');
 function match_Main ($stack = array()) {
 	$matchrule = "Main"; $result = $this->construct($matchrule, $matchrule, null);
@@ -32,12 +32,32 @@ function match_Main ($stack = array()) {
 			$result["text"] .= '(';
 		}
 		else { $_5 = FALSE; break; }
-		if (( $subres = $this->whitespace(  ) ) !== FALSE) { $result["text"] .= $subres; }
+		$res_1 = $result;
+		$pos_1 = $this->pos;
+		$matcher = 'match_'.'whitespace'; $key = $matcher; $pos = $this->pos;
+		$subres = ( $this->packhas( $key, $pos ) ? $this->packread( $key, $pos ) : $this->packwrite( $key, $pos, $this->$matcher(array_merge($stack, array($result))) ) );
+		if ($subres !== FALSE) { $this->store( $result, $subres ); }
+		else {
+			$result = $res_1;
+			$this->pos = $pos_1;
+			unset( $res_1 );
+			unset( $pos_1 );
+		}
 		$matcher = 'match_'.'Array'; $key = $matcher; $pos = $this->pos;
 		$subres = ( $this->packhas( $key, $pos ) ? $this->packread( $key, $pos ) : $this->packwrite( $key, $pos, $this->$matcher(array_merge($stack, array($result))) ) );
 		if ($subres !== FALSE) { $this->store( $result, $subres ); }
 		else { $_5 = FALSE; break; }
-		if (( $subres = $this->whitespace(  ) ) !== FALSE) { $result["text"] .= $subres; }
+		$res_3 = $result;
+		$pos_3 = $this->pos;
+		$matcher = 'match_'.'whitespace'; $key = $matcher; $pos = $this->pos;
+		$subres = ( $this->packhas( $key, $pos ) ? $this->packread( $key, $pos ) : $this->packwrite( $key, $pos, $this->$matcher(array_merge($stack, array($result))) ) );
+		if ($subres !== FALSE) { $this->store( $result, $subres ); }
+		else {
+			$result = $res_3;
+			$this->pos = $pos_3;
+			unset( $res_3 );
+			unset( $pos_3 );
+		}
 		if (substr($this->string,$this->pos,1) == ')') {
 			$this->pos += 1;
 			$result["text"] .= ')';
@@ -54,7 +74,7 @@ public function Main_Array (&$result, $sub) {
         $result['val'] = $sub['val'];
     }
 
-/* Array: Element ( > ',' > Element ) * ( > ',' ) ? */
+/* Array: Element ( whitespace? ',' whitespace? Element ) * ( whitespace? ',' ) ? */
 protected $match_Array_typestack = array('Array');
 function match_Array ($stack = array()) {
 	$matchrule = "Array"; $result = $this->construct($matchrule, $matchrule, null);
@@ -69,13 +89,33 @@ function match_Array ($stack = array()) {
 			$pos_13 = $this->pos;
 			$_12 = NULL;
 			do {
-				if (( $subres = $this->whitespace(  ) ) !== FALSE) { $result["text"] .= $subres; }
+				$res_8 = $result;
+				$pos_8 = $this->pos;
+				$matcher = 'match_'.'whitespace'; $key = $matcher; $pos = $this->pos;
+				$subres = ( $this->packhas( $key, $pos ) ? $this->packread( $key, $pos ) : $this->packwrite( $key, $pos, $this->$matcher(array_merge($stack, array($result))) ) );
+				if ($subres !== FALSE) { $this->store( $result, $subres ); }
+				else {
+					$result = $res_8;
+					$this->pos = $pos_8;
+					unset( $res_8 );
+					unset( $pos_8 );
+				}
 				if (substr($this->string,$this->pos,1) == ',') {
 					$this->pos += 1;
 					$result["text"] .= ',';
 				}
 				else { $_12 = FALSE; break; }
-				if (( $subres = $this->whitespace(  ) ) !== FALSE) { $result["text"] .= $subres; }
+				$res_10 = $result;
+				$pos_10 = $this->pos;
+				$matcher = 'match_'.'whitespace'; $key = $matcher; $pos = $this->pos;
+				$subres = ( $this->packhas( $key, $pos ) ? $this->packread( $key, $pos ) : $this->packwrite( $key, $pos, $this->$matcher(array_merge($stack, array($result))) ) );
+				if ($subres !== FALSE) { $this->store( $result, $subres ); }
+				else {
+					$result = $res_10;
+					$this->pos = $pos_10;
+					unset( $res_10 );
+					unset( $pos_10 );
+				}
 				$matcher = 'match_'.'Element'; $key = $matcher; $pos = $this->pos;
 				$subres = ( $this->packhas( $key, $pos ) ? $this->packread( $key, $pos ) : $this->packwrite( $key, $pos, $this->$matcher(array_merge($stack, array($result))) ) );
 				if ($subres !== FALSE) { $this->store( $result, $subres ); }
@@ -95,7 +135,17 @@ function match_Array ($stack = array()) {
 		$pos_17 = $this->pos;
 		$_16 = NULL;
 		do {
-			if (( $subres = $this->whitespace(  ) ) !== FALSE) { $result["text"] .= $subres; }
+			$res_14 = $result;
+			$pos_14 = $this->pos;
+			$matcher = 'match_'.'whitespace'; $key = $matcher; $pos = $this->pos;
+			$subres = ( $this->packhas( $key, $pos ) ? $this->packread( $key, $pos ) : $this->packwrite( $key, $pos, $this->$matcher(array_merge($stack, array($result))) ) );
+			if ($subres !== FALSE) { $this->store( $result, $subres ); }
+			else {
+				$result = $res_14;
+				$this->pos = $pos_14;
+				unset( $res_14 );
+				unset( $pos_14 );
+			}
 			if (substr($this->string,$this->pos,1) == ',') {
 				$this->pos += 1;
 				$result["text"] .= ',';
@@ -168,7 +218,7 @@ public function Element_Value (&$result, $sub) {
         $result['val'] = $sub['val'];
     }
 
-/* KeyValue: Key > '=' > Value */
+/* KeyValue: Key whitespace? '=' whitespace? Value */
 protected $match_KeyValue_typestack = array('KeyValue');
 function match_KeyValue ($stack = array()) {
 	$matchrule = "KeyValue"; $result = $this->construct($matchrule, $matchrule, null);
@@ -178,13 +228,33 @@ function match_KeyValue ($stack = array()) {
 		$subres = ( $this->packhas( $key, $pos ) ? $this->packread( $key, $pos ) : $this->packwrite( $key, $pos, $this->$matcher(array_merge($stack, array($result))) ) );
 		if ($subres !== FALSE) { $this->store( $result, $subres ); }
 		else { $_30 = FALSE; break; }
-		if (( $subres = $this->whitespace(  ) ) !== FALSE) { $result["text"] .= $subres; }
+		$res_26 = $result;
+		$pos_26 = $this->pos;
+		$matcher = 'match_'.'whitespace'; $key = $matcher; $pos = $this->pos;
+		$subres = ( $this->packhas( $key, $pos ) ? $this->packread( $key, $pos ) : $this->packwrite( $key, $pos, $this->$matcher(array_merge($stack, array($result))) ) );
+		if ($subres !== FALSE) { $this->store( $result, $subres ); }
+		else {
+			$result = $res_26;
+			$this->pos = $pos_26;
+			unset( $res_26 );
+			unset( $pos_26 );
+		}
 		if (substr($this->string,$this->pos,1) == '=') {
 			$this->pos += 1;
 			$result["text"] .= '=';
 		}
 		else { $_30 = FALSE; break; }
-		if (( $subres = $this->whitespace(  ) ) !== FALSE) { $result["text"] .= $subres; }
+		$res_28 = $result;
+		$pos_28 = $this->pos;
+		$matcher = 'match_'.'whitespace'; $key = $matcher; $pos = $this->pos;
+		$subres = ( $this->packhas( $key, $pos ) ? $this->packread( $key, $pos ) : $this->packwrite( $key, $pos, $this->$matcher(array_merge($stack, array($result))) ) );
+		if ($subres !== FALSE) { $this->store( $result, $subres ); }
+		else {
+			$result = $res_28;
+			$this->pos = $pos_28;
+			unset( $res_28 );
+			unset( $pos_28 );
+		}
 		$matcher = 'match_'.'Value'; $key = $matcher; $pos = $this->pos;
 		$subres = ( $this->packhas( $key, $pos ) ? $this->packread( $key, $pos ) : $this->packwrite( $key, $pos, $this->$matcher(array_merge($stack, array($result))) ) );
 		if ($subres !== FALSE) { $this->store( $result, $subres ); }
@@ -243,7 +313,7 @@ public function Key_String (&$result, $sub) {
         $result['val'] = substr($sub['text'], 1, -1);
     }
 
-/* Value: Symbol | String | Number | ( '{' > Array > '}' ) */
+/* Value: Symbol | String | Number | ( '{' whitespace? Array whitespace? '}' ) */
 protected $match_Value_typestack = array('Value');
 function match_Value ($stack = array()) {
 	$matchrule = "Value"; $result = $this->construct($matchrule, $matchrule, null);
@@ -290,12 +360,32 @@ function match_Value ($stack = array()) {
 						$result["text"] .= '{';
 					}
 					else { $_48 = FALSE; break; }
-					if (( $subres = $this->whitespace(  ) ) !== FALSE) { $result["text"] .= $subres; }
+					$res_44 = $result;
+					$pos_44 = $this->pos;
+					$matcher = 'match_'.'whitespace'; $key = $matcher; $pos = $this->pos;
+					$subres = ( $this->packhas( $key, $pos ) ? $this->packread( $key, $pos ) : $this->packwrite( $key, $pos, $this->$matcher(array_merge($stack, array($result))) ) );
+					if ($subres !== FALSE) { $this->store( $result, $subres ); }
+					else {
+						$result = $res_44;
+						$this->pos = $pos_44;
+						unset( $res_44 );
+						unset( $pos_44 );
+					}
 					$matcher = 'match_'.'Array'; $key = $matcher; $pos = $this->pos;
 					$subres = ( $this->packhas( $key, $pos ) ? $this->packread( $key, $pos ) : $this->packwrite( $key, $pos, $this->$matcher(array_merge($stack, array($result))) ) );
 					if ($subres !== FALSE) { $this->store( $result, $subres ); }
 					else { $_48 = FALSE; break; }
-					if (( $subres = $this->whitespace(  ) ) !== FALSE) { $result["text"] .= $subres; }
+					$res_46 = $result;
+					$pos_46 = $this->pos;
+					$matcher = 'match_'.'whitespace'; $key = $matcher; $pos = $this->pos;
+					$subres = ( $this->packhas( $key, $pos ) ? $this->packread( $key, $pos ) : $this->packwrite( $key, $pos, $this->$matcher(array_merge($stack, array($result))) ) );
+					if ($subres !== FALSE) { $this->store( $result, $subres ); }
+					else {
+						$result = $res_46;
+						$this->pos = $pos_46;
+						unset( $res_46 );
+						unset( $pos_46 );
+					}
 					if (substr($this->string,$this->pos,1) == '}') {
 						$this->pos += 1;
 						$result["text"] .= '}';
@@ -506,6 +596,18 @@ protected $match_Float_typestack = array('Float');
 function match_Float ($stack = array()) {
 	$matchrule = "Float"; $result = $this->construct($matchrule, $matchrule, null);
 	if (( $subres = $this->rx( '/[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?/' ) ) !== FALSE) {
+		$result["text"] .= $subres;
+		return $this->finalise($result);
+	}
+	else { return FALSE; }
+}
+
+
+/* whitespace: /\s+/ */
+protected $match_whitespace_typestack = array('whitespace');
+function match_whitespace ($stack = array()) {
+	$matchrule = "whitespace"; $result = $this->construct($matchrule, $matchrule, null);
+	if (( $subres = $this->rx( '/\s+/' ) ) !== FALSE) {
 		$result["text"] .= $subres;
 		return $this->finalise($result);
 	}
