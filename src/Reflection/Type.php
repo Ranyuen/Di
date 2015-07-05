@@ -11,8 +11,6 @@
 
 namespace Ranyuen\Di\Reflection;
 
-use Doctrine\Common\Annotations\PhpParser;
-
 /**
  * Type reflection tools.
  */
@@ -46,7 +44,6 @@ class Type
                 $prop->getDeclaringClass()
             );
         }
-
         return;
     }
 
@@ -66,14 +63,13 @@ class Type
                 $param->getDeclaringFunction()->getDeclaringClass()
             );
         }
-
         return;
     }
 
     /**
      * Get Full name of the type.
      *
-     * Inspired from https://github.com/mnapoli/PhpDocReader
+     * Inspired by https://github.com/mnapoli/PhpDocReader
      *
      * @param string           $type  Short type name.
      * @param \ReflectionClass $class Declared class.
@@ -108,7 +104,7 @@ class Type
             return;
         }
         if ('\\' !== $type[0]) {
-            $uses = (new PhpParser())->parseClass($class);
+            $uses = $this->getUseStatements($class);
             $alias = strtolower(explode('\\', $type)[0]);
             if (isset($uses[$alias])) {
                 $type = $uses[$alias].preg_replace('/^[^\\\\]+/', '', $type);
@@ -118,8 +114,71 @@ class Type
                 $type = "{$uses['__NAMESPACE__']}\\$type";
             }
         }
-
         return ltrim($type, '\\');
+    }
+
+    /**
+     * Parses a class.
+     *
+     * @param \ReflectionClass $class A <code>ReflectionClass</code> object.
+     *
+     * @return array A list with use statements in the form (Alias => FQN).
+     */
+    private function getUseStatements(\ReflectionClass $class)
+    {
+        if (false === ($filename = $class->getFilename())) {
+            return [];
+        }
+        if (null === ($content = $this->getFileContent($filename, $class->getStartLine()))) {
+            return [];
+        }
+        $namespace = preg_quote($class->getNamespaceName());
+        $content = preg_replace('/^.*?(\bnamespace\s+'.$namespace.'\s*[;{].*)$/s', '\\1', $content);
+        $uses = [];
+        preg_match_all(
+            '/^use\s+([a-zA-Z0-9_\\x7f-\\xff\\\\]+)(?:\s+as\s+([a-zA-Z0-9_\\x7f-\\xff]+))?\s*;/m',
+            $content,
+            $uses,
+            PREG_SET_ORDER
+        );
+        return array_reduce(
+            $uses,
+            function ($uses, $item) {
+                $ns = explode('\\', $item[1]);
+                $uses[strtolower(end($ns))] = $item[1];
+                if (isset($item[2])) {
+                    $ns = explode('\\', $item[2]);
+                    $uses[strtolower(end($ns))] = $item[2];
+                }
+                return $uses;
+            },
+            []
+        );
+    }
+
+    /**
+     * Gets the content of the file right up to the given line number.
+     *
+     * @param string  $filename   The name of the file to load.
+     * @param integer $lineNumber The number of lines to read from file.
+     *
+     * @return string The content of the file.
+     */
+    private function getFileContent($filename, $lineNumber)
+    {
+        if (!is_file($filename)) {
+            return null;
+        }
+        $content = '';
+        $lineCnt = 0;
+        $file = new \SplFileObject($filename);
+        while (!$file->eof()) {
+            if ($lineCnt++ == $lineNumber) {
+                break;
+            }
+            $content .= $file->fgets();
+        }
+        return $content;
     }
 
     private function isTypeExists($type)
