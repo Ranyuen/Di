@@ -1,4 +1,5 @@
 <?php
+
 require_once 'tests/Fixture/Lighter.php';
 
 use Ranyuen\Di\Container;

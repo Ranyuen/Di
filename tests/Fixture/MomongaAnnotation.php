@@ -1,4 +1,5 @@
 <?php
+
 namespace Fixture;
 
 use Ranyuen\Di\Reflection\Annotation;

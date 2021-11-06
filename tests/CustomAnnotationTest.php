@@ -1,4 +1,5 @@
 <?php
+
 require 'tests/Fixture/MomongaAnnotation.php';
 
 use Fixture\MomongaAnnotated;

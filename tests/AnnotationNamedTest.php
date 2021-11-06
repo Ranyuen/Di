@@ -1,4 +1,5 @@
 <?php
+
 require_once 'tests/Fixture/Momonga.php';
 
 use Fixture\Momonga;

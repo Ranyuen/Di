@@ -1,4 +1,5 @@
 <?php
+
 require_once 'tests/Fixture/Wrapped.php';
 
 use Fixture\Wrapped;

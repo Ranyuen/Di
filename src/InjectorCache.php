@@ -114,7 +114,7 @@ class InjectorCache
                     return $dispatcher->invoke($func, $args);
                 };
 
-                // $deps = [];
+            // $deps = [];
                 // $method = $class->getMethod('__construct');
                 // $params = $method->getParameters();
                 // foreach ($params as $param) {

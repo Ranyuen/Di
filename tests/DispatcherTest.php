@@ -1,4 +1,5 @@
 <?php
+
 require_once 'tests/Fixture/Momonga.php';
 require_once 'tests/Fixture/dispatcherCallables.php';
 
