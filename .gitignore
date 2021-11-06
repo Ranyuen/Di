@@ -1,4 +1,5 @@
 .php_cs.cache
+.php-cs-fixer.cache
 build/
 
 # Created by https://www.gitignore.io
