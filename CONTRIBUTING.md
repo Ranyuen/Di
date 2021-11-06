@@ -1,18 +1,17 @@
-CONTRIBUTING
-==
+# CONTRIBUTING
 
-Before commit, push or pull request.
---
+## Before commit, push or pull request.
+
 ```sh
-vendor/bin/phing
+./vendor/bin/phing
 ```
 
-Start developing.
---
+## Start developing.
+
 We need:
 
 1. Git :) and clone this repo.
-2. PHP >=5.4 or latest HHVM.
+2. PHP >=7.3.
 3. [composer](https://getcomposer.org/) and `composer install`.
 
 You may have:
