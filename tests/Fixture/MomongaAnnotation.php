@@ -2,9 +2,9 @@
 
 namespace Fixture;
 
-use Ranyuen\Di\Reflection\Annotation;
+use Ranyuen\Di\Reflection\AbstractAnnotation;
 
-class MomongaAnnotation extends Annotation
+class MomongaAnnotation extends AbstractAnnotation
 {
     public function isMomonga($target)
     {

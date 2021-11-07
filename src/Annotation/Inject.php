@@ -11,12 +11,12 @@
 
 namespace Ranyuen\Di\Annotation;
 
-use Ranyuen\Di\Reflection\Annotation;
+use Ranyuen\Di\Reflection\AbstractAnnotation;
 
 /**
  * Inject annotation.
  */
-class Inject extends Annotation
+class Inject extends AbstractAnnotation
 {
     /**
      * Does the method or property has @Inject annotation?

@@ -11,12 +11,12 @@
 
 namespace Ranyuen\Di\Annotation;
 
-use Ranyuen\Di\Reflection\Annotation;
+use Ranyuen\Di\Reflection\AbstractAnnotation;
 
 /**
  * Named annotation.
  */
-class Named extends Annotation
+class Named extends AbstractAnnotation
 {
     /**
      * Get the values of @Named annotation.

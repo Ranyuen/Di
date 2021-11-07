@@ -9,12 +9,14 @@
  * @link      https://github.com/Ranyuen/Di
  */
 
+declare(strict_types=1);
+
 namespace Ranyuen\Di\Reflection;
 
 /**
  * Annotation base.
  */
-abstract class Annotation
+abstract class AbstractAnnotation
 {
     /**
      * Does the target has the annotations?

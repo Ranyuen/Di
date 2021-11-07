@@ -11,12 +11,12 @@
 
 namespace Ranyuen\Di\Annotation;
 
-use Ranyuen\Di\Reflection\Annotation;
+use Ranyuen\Di\Reflection\AbstractAnnotation;
 
 /**
  * Wrap annotation.
  */
-class Wrap extends Annotation
+class Wrap extends AbstractAnnotation
 {
     /**
      * Gather wraps.
