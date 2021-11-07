@@ -11,7 +11,7 @@ use Fixture\InjectToProperties;
 use Fixture\Momonga;
 use Ranyuen\Di\Container;
 
-class InjectionTest extends PHPUnit_Framework_TestCase
+class InjectionTest extends \PHPUnit\Framework\TestCase
 {
     /** @var Container */
     public $container;

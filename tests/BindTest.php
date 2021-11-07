@@ -5,7 +5,7 @@ require_once 'tests/Fixture/Momonga.php';
 use Fixture\Momonga;
 use Ranyuen\Di\Container;
 
-class BindTest extends PHPUnit_Framework_TestCase
+class BindTest extends \PHPUnit\Framework\TestCase
 {
     public function testBind()
     {

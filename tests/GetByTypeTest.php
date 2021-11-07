@@ -5,7 +5,7 @@ require_once 'tests/Fixture/Momonga.php';
 use Fixture\Momonga;
 use Ranyuen\Di\Container;
 
-class GetByTypeTest extends PHPUnit_Framework_TestCase
+class GetByTypeTest extends \PHPUnit\Framework\TestCase
 {
     public function testGetByType()
     {

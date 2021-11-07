@@ -5,7 +5,7 @@ require_once 'tests/Fixture/Momonga.php';
 use Fixture\Momonga;
 use Ranyuen\Di\Reflection\Type;
 
-class ReflectionTypeTest extends PHPUnit_Framework_TestCase
+class ReflectionTypeTest extends \PHPUnit\Framework\TestCase
 {
     /** @var Fixture\Momonga */
     private $interface;

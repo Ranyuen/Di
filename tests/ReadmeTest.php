@@ -1,6 +1,6 @@
 <?php
 
-class ReadmeTest extends PHPUnit_Framework_TestCase
+class ReadmeTest extends \PHPUnit\Framework\TestCase
 {
     public function testReadme()
     {

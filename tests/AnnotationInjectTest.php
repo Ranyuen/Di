@@ -5,7 +5,7 @@ require_once 'tests/Fixture/Momonga.php';
 use Fixture\Momonga;
 use Ranyuen\Di\Annotation\Inject;
 
-class AnnotationInjectTest extends PHPUnit_Framework_TestCase
+class AnnotationInjectTest extends \PHPUnit\Framework\TestCase
 {
     /** @var Fixture\Momonga */
     private $interface;

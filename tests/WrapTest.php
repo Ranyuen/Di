@@ -5,7 +5,7 @@ require_once 'tests/Fixture/Wrapped.php';
 use Fixture\Wrapped;
 use Ranyuen\Di\Container;
 
-class WrapTest extends PHPUnit_Framework_TestCase
+class WrapTest extends \PHPUnit\Framework\TestCase
 {
     public function testWrap()
     {

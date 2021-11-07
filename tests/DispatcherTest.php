@@ -6,7 +6,7 @@ require_once 'tests/Fixture/dispatcherCallables.php';
 use Ranyuen\Di\Container;
 use Ranyuen\Di\Dispatcher\Dispatcher;
 
-class DispatcherTest extends PHPUnit_Framework_TestCase
+class DispatcherTest extends \PHPUnit\Framework\TestCase
 {
     private function getInjector()
     {
