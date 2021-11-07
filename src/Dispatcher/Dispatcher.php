@@ -101,10 +101,11 @@ class Dispatcher
             list($interface, $method) = explode('@', $func);
             $invocation = function () use ($thisObj, $interface, $method) {
                 if (!is_object($thisObj) || !($thisObj instanceof $interface)) {
+                    $getByType = $this->c->getByType($interface);
                     if (isset($this->c[$interface])) {
                         $thisObj = $this->c[$interface];
-                    } elseif ($thisObj = $this->c->getByType($interface)) {
-                        null;
+                    } elseif ($getByType) {
+                        $thisObj = $getByType;
                     } else {
                         $thisObj = $this->c->newInstance($interface);
                     }

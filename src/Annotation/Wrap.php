@@ -29,7 +29,8 @@ class Wrap extends Annotation
     {
         $wraps = [];
         foreach ($target->getMethods() as $method) {
-            if ($advices = $this->getWrap($method)) {
+            $advices = $this->getWrap($method);
+            if ($advices) {
                 $name = $method->getName();
                 foreach ($advices as $advice) {
                     $wraps[$advice][] = $name;

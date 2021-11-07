@@ -11,7 +11,8 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        php: ["7.3", "7.4", "8.0"]
+        # php: ["7.4", "8.0"]
+        php: ["7.4"]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: shivammathur/setup-php@v2
