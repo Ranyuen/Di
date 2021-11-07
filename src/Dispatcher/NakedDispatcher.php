@@ -120,7 +120,8 @@ class NakedDispatcher
     private function hasParametrizedValue(\ReflectionParameter $param, &$result)
     {
         $result = null;
-        if ($type = $param->getClass()) {
+        $type = $param->getClass();
+        if ($type) {
             $type = $type->name;
             if (isset($this->typed[$type])) {
                 $result = $this->typed[$type];
@@ -138,7 +139,8 @@ class NakedDispatcher
                 return true;
             }
         }
-        if (isset($this->c[$key = (new KeyReflector($this->c))->detectKey($param)])) {
+        $key = (new KeyReflector($this->c))->detectKey($param);
+        if (isset($this->c[$key])) {
             $result = $this->c[$key];
             return true;
         }

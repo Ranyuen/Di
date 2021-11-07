@@ -44,7 +44,8 @@ class KeyReflector
     {
         $key = $obj->name;
         if ($obj instanceof \ReflectionProperty) {
-            if ($injectName = (new Inject())->getInject($obj)) {
+            $injectName = (new Inject())->getInject($obj);
+            if ($injectName) {
                 $named = [$key => $injectName];
             } else {
                 $named = (new Named())->getNamed($obj);
@@ -52,10 +53,10 @@ class KeyReflector
         } else {
             $named = (new Named())->getNamed($obj->getDeclaringFunction());
         }
+        $type = (new Type())->getType($obj);
         if (isset($named[$key])) {
             $key = $named[$key];
-        } elseif (($type = (new Type())->getType($obj))
-            && isset($this->c->classes[$type])
+        } elseif ($type && isset($this->c->classes[$type])
         ) {
             $key = $this->c->classes[$type];
         }

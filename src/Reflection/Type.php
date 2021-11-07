@@ -52,7 +52,8 @@ class Type
 
     private function getTypeOfParameter(\ReflectionParameter $param)
     {
-        if ($class = $param->getClass()) {
+        $class = $param->getClass();
+        if ($class) {
             return $class->name;
         }
         $paramName = $param->name;
