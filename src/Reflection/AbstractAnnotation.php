@@ -30,11 +30,11 @@ abstract class AbstractAnnotation
      */
     protected function hasAnnotation($target, $annotation)
     {
-        if (!is_callable([$target, 'getDocComment'])) {
-            throw new AnnotationException('Not annotatalbe: '.(string) $target);
+        if (! is_callable([$target, 'getDocComment'])) {
+            throw new AnnotationException('Not annotatalbe: '. (string) $target);
         }
 
-        return !!preg_match(
+        return ! ! preg_match(
             '#^[\\s/*]*@'.preg_quote($annotation, '#').'(?=\W|$)#m',
             $target->getDocComment()
         );
@@ -52,7 +52,7 @@ abstract class AbstractAnnotation
      */
     protected function getEachValue($target, $annotation)
     {
-        if (!$this->hasAnnotation($target, $annotation)) {
+        if (! $this->hasAnnotation($target, $annotation)) {
             return null;
         }
         $vals = [];
@@ -60,19 +60,20 @@ abstract class AbstractAnnotation
         while (true) {
             $offset = 0;
             $matches = [];
-            if (!preg_match(
+            if (! preg_match(
                 '#^@'.preg_quote($annotation, '#').'\\s*(?=\()#m',
                 $doc,
                 $matches,
                 PREG_OFFSET_CAPTURE,
                 $offset
-            )) {
+            )
+            ) {
                 return $vals;
             }
             $offset = $matches[0][1] + strlen($matches[0][0]);
             $doc = substr($doc, $offset);
             $nValues = (new AnnotationParser($doc))->parse();
-            if (!is_null($nValues)) {
+            if (! is_null($nValues)) {
                 $vals[] = $nValues;
             }
         }
@@ -90,7 +91,7 @@ abstract class AbstractAnnotation
      */
     protected function getValues($target, $annotation)
     {
-        if (!$this->hasAnnotation($target, $annotation)) {
+        if (! $this->hasAnnotation($target, $annotation)) {
             return null;
         }
         return array_reduce(

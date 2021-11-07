@@ -58,7 +58,7 @@ class NakedDispatcher
 
             return;
         }
-        if (!($array instanceof \ArrayAccess)) {
+        if (! ($array instanceof \ArrayAccess)) {
             throw new Exception('the arg must implement ArrayAccess.');
         }
         $this->nameds[] = $array;
@@ -74,7 +74,7 @@ class NakedDispatcher
      */
     public function setTypedArg($interface, $val)
     {
-        if (!class_exists($interface) && !interface_exists($interface)) {
+        if (! class_exists($interface) && ! interface_exists($interface)) {
             return;
         }
         $this->typed[$interface] = $val;
@@ -83,7 +83,7 @@ class NakedDispatcher
             class_parents($interface),
             class_uses($interface)
         ) as $parent) {
-            if (!isset($this->typed[$parent])) {
+            if (! isset($this->typed[$parent])) {
                 $this->typed[$parent] = $val;
             }
         }

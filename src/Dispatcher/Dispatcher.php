@@ -29,7 +29,7 @@ class Dispatcher
      */
     public static function isRegex($str)
     {
-        if (!(is_string($str) && preg_match('/\A[^A-Za-z0-9\\\s]/', $str))) {
+        if (! (is_string($str) && preg_match('/\A[^A-Za-z0-9\\\s]/', $str))) {
             return false;
         }
         $delimiter = $str[0];
@@ -43,7 +43,7 @@ class Dispatcher
             $delimiter = $delimiters[$delimiter];
         }
 
-        return !!preg_match('/'.preg_quote($delimiter, '/').'[imsxeADSUXJu]*\z/', $str);
+        return ! ! preg_match('/'.preg_quote($delimiter, '/').'[imsxeADSUXJu]*\z/', $str);
     }
 
     private $c;
@@ -102,7 +102,7 @@ class Dispatcher
         if (is_string($func) && (strpos($func, '@') !== false)) {
             list($interface, $method) = explode('@', $func);
             $invocation = function () use ($thisObj, $interface, $method) {
-                if (!is_object($thisObj) || !($thisObj instanceof $interface)) {
+                if (! is_object($thisObj) || ! ($thisObj instanceof $interface)) {
                     $getByType = $this->c->getByType($interface);
                     if (isset($this->c[$interface])) {
                         $thisObj = $this->c[$interface];
@@ -118,6 +118,6 @@ class Dispatcher
             $params = (new \ReflectionMethod($interface, $method))->getParameters();
             return new ParametrizedInvokable($invocation, $params);
         }
-        throw new Exception('Not a callable: '.(string) $func);
+        throw new Exception('Not a callable: '. (string) $func);
     }
 }

@@ -3,7 +3,9 @@
     <description>Ranyuen coding standard.</description>
 
     <!-- Generic -->
-    <rule ref="Generic.Classes"/>
+    <rule ref="Generic.Classes">
+        <exclude name="Generic.Classes.OpeningBraceSameLine"/>
+    </rule>
     <rule ref="Generic.CodeAnalysis"/>
     <rule ref="Generic.Commenting"/>
     <rule ref="Generic.ControlStructures"/>

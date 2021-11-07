@@ -42,7 +42,8 @@ class Type
             '/^[\\s\\/*]*@var\\s+(\S+)/m',
             $prop->getDocComment(),
             $matches
-        )) {
+        )
+        ) {
             return $this->getFullNameOfType(
                 $matches[1],
                 $prop->getDeclaringClass()
@@ -63,7 +64,8 @@ class Type
             '/^[\\s\\/*]*@param\\s+(\S+)\\s+\\$'.preg_quote($paramName, '/').'\\W/m',
             $param->getDeclaringFunction()->getDocComment(),
             $matches
-        )) {
+        )
+        ) {
             return $this->getFullNameOfType(
                 $matches[1],
                 $param->getDeclaringFunction()->getDeclaringClass()
@@ -106,7 +108,7 @@ class Type
             '$this',
         ];
         if (in_array($type, $reserved)
-            || !preg_match('/^[a-zA-Z0-9_\\x7f-\\xff\\\\]+$/', $type)
+            || ! preg_match('/^[a-zA-Z0-9_\\x7f-\\xff\\\\]+$/', $type)
         ) {
             return;
         }
