@@ -9,6 +9,8 @@
  * @link      https://github.com/Ranyuen/Di
  */
 
+declare(strict_types=1);
+
 namespace Ranyuen\Di\Dispatcher;
 
 /**

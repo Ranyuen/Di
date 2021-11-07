@@ -8,6 +8,9 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
  * @link      https://github.com/Ranyuen/Di
  */
+
+declare(strict_types=1);
+
 namespace Ranyuen\Di\Reflection;
 
 require_once 'vendor/hafriedlander/php-peg/autoloader.php';
