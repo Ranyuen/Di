@@ -97,7 +97,7 @@ class Dispatcher
                 return preg_match($func, $subject, $matches, $flags, $offset);
             };
         }
-        if (is_string($func) && (false !== strpos($func, '@'))) {
+        if (is_string($func) && (strpos($func, '@') !== false)) {
             list($interface, $method) = explode('@', $func);
             $invocation = function () use ($thisObj, $interface, $method) {
                 if (!is_object($thisObj) || !($thisObj instanceof $interface)) {

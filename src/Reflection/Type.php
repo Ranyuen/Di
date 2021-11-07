@@ -108,7 +108,7 @@ class Type
         ) {
             return;
         }
-        if ('\\' !== $type[0]) {
+        if ($type[0] !== '\\') {
             $uses = (new PhpParser())->parseClass($class);
             $alias = strtolower(explode('\\', $type)[0]);
             if (isset($uses[$alias])) {
