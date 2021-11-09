@@ -62,7 +62,7 @@ class Type
         $paramName = $param->name;
         if (preg_match(
             '/^[\\s\\/*]*@param\\s+(\S+)\\s+\\$'.preg_quote($paramName, '/').'\\W/m',
-            $param->getDeclaringFunction()->getDocComment(),
+            strval($param->getDeclaringFunction()->getDocComment()),
             $matches
         )
         ) {
