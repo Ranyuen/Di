@@ -55,9 +55,9 @@ class Type
 
     private function getTypeOfParameter(\ReflectionParameter $param)
     {
-        $class = $param->getClass();
+        $class = $param->getType();
         if ($class) {
-            return $class->name;
+            return $class->getName();
         }
         $paramName = $param->name;
         if (preg_match(

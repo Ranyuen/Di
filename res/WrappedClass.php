@@ -31,12 +31,15 @@ $methods = array_map(function ($method) {
     $params = implode(', ', array_map(
         function ($param) {
             $hint = '';
-            if ($param->getClass()) {
-                $hint = $param->getClass()->getName();
-            } elseif ($param->isArray()) {
-                $hint = 'array';
-            } elseif ($param->isCallable()) {
-                $hint = 'callable';
+            $type = $param->getType();
+            if ($type) {
+                if ($type->getName() === 'array') {
+                    $hint = 'array';
+                } elseif ($type->getName() === 'callable') {
+                    $hint = 'callable';
+                } else {
+                    $hint = $type->getName();
+                }
             }
             $name = '$'.$param->getName();
             if ($param->isPassedByReference()) {

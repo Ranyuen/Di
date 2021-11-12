@@ -108,7 +108,7 @@ class NakedDispatcher
             }
         }
 
-        return call_user_func_array($func, $args);
+        return call_user_func_array($func, array_values($args));
     }
 
     /**
@@ -122,9 +122,9 @@ class NakedDispatcher
     private function hasParametrizedValue(\ReflectionParameter $param, &$result)
     {
         $result = null;
-        $type = $param->getClass();
+        $type = $param->getType();
         if ($type) {
-            $type = $type->name;
+            $type = $type->getName();
             if (isset($this->typed[$type])) {
                 $result = $this->typed[$type];
                 return true;
