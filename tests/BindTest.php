@@ -52,11 +52,9 @@ class BindTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(42, $c['momonga']);
     }
 
-    /**
-     * @expectedException RuntimeException
-     */
     public function testFrozen()
     {
+        $this->expectException(\Pimple\Exception\FrozenServiceException::class);
         $c = new Container();
         $c['momonga'] = function ($c) {
             return new Momonga();

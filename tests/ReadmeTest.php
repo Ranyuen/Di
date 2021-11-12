@@ -7,7 +7,7 @@ class ReadmeTest extends \PHPUnit\Framework\TestCase
         ob_start();
         eval('?>'.file_get_contents('README.md'));
         $result = ob_get_clean();
-        $this->assertRegExp('/bool\(true\)/', $result);
+        $this->assertMatchesRegularExpression('/bool\(true\)/', $result);
         $this->assertFalse(strpos($result, 'bool(false)'));
     }
 }
