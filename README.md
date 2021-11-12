@@ -16,7 +16,7 @@ Annotation based simple DI (Dependency Injection) & AOP (Aspect Oriented Program
 composer require ranyuen/di
 ```
 
-Support PHP >=5.4.
+Support PHP >=7.4.
 
 ## DI Example
 
