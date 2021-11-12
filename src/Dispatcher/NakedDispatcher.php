@@ -4,10 +4,12 @@
  *
  * @author    Ranyuen <cal_pone@ranyuen.com>
  * @author    ne_Sachirou <utakata.c4se@gmail.com>
- * @copyright 2014-2015 Ranyuen
+ * @copyright 2014-2021 Ranyuen
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
  * @link      https://github.com/Ranyuen/Di
  */
+
+declare(strict_types=1);
 
 namespace Ranyuen\Di\Dispatcher;
 
@@ -56,7 +58,7 @@ class NakedDispatcher
 
             return;
         }
-        if (!($array instanceof \ArrayAccess)) {
+        if (! ($array instanceof \ArrayAccess)) {
             throw new Exception('the arg must implement ArrayAccess.');
         }
         $this->nameds[] = $array;
@@ -72,7 +74,7 @@ class NakedDispatcher
      */
     public function setTypedArg($interface, $val)
     {
-        if (!class_exists($interface) && !interface_exists($interface)) {
+        if (! class_exists($interface) && ! interface_exists($interface)) {
             return;
         }
         $this->typed[$interface] = $val;
@@ -81,7 +83,7 @@ class NakedDispatcher
             class_parents($interface),
             class_uses($interface)
         ) as $parent) {
-            if (!isset($this->typed[$parent])) {
+            if (! isset($this->typed[$parent])) {
                 $this->typed[$parent] = $val;
             }
         }
@@ -106,7 +108,7 @@ class NakedDispatcher
             }
         }
 
-        return call_user_func_array($func, $args);
+        return call_user_func_array($func, array_values($args));
     }
 
     /**
@@ -120,8 +122,9 @@ class NakedDispatcher
     private function hasParametrizedValue(\ReflectionParameter $param, &$result)
     {
         $result = null;
-        if ($type = $param->getClass()) {
-            $type = $type->name;
+        $type = $param->getType();
+        if ($type) {
+            $type = $type->getName();
             if (isset($this->typed[$type])) {
                 $result = $this->typed[$type];
                 return true;
@@ -138,7 +141,8 @@ class NakedDispatcher
                 return true;
             }
         }
-        if (isset($this->c[$key = (new KeyReflector($this->c))->detectKey($param)])) {
+        $key = (new KeyReflector($this->c))->detectKey($param);
+        if (isset($this->c[$key])) {
             $result = $this->c[$key];
             return true;
         }

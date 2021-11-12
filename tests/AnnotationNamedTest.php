@@ -1,10 +1,11 @@
 <?php
+
 require_once 'tests/Fixture/Momonga.php';
 
 use Fixture\Momonga;
 use Ranyuen\Di\Annotation\Named;
 
-class AnnotationNamedTest extends PHPUnit_Framework_TestCase
+class AnnotationNamedTest extends \PHPUnit\Framework\TestCase
 {
     /** @var Fixture\Momonga */
     private $interface;

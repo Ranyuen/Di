@@ -4,17 +4,19 @@
  *
  * @author    Ranyuen <cal_pone@ranyuen.com>
  * @author    ne_Sachirou <utakata.c4se@gmail.com>
- * @copyright 2014-2015 Ranyuen
+ * @copyright 2014-2021 Ranyuen
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
  * @link      https://github.com/Ranyuen/Di
  */
+
+declare(strict_types=1);
 
 namespace Ranyuen\Di\Reflection;
 
 /**
  * Annotation base.
  */
-abstract class Annotation
+abstract class AbstractAnnotation
 {
     /**
      * Does the target has the annotations?
@@ -28,13 +30,13 @@ abstract class Annotation
      */
     protected function hasAnnotation($target, $annotation)
     {
-        if (!is_callable([$target, 'getDocComment'])) {
-            throw new AnnotationException('Not annotatalbe: '.(string) $target);
+        if (! is_callable([$target, 'getDocComment'])) {
+            throw new AnnotationException('Not annotatalbe: '. (string) $target);
         }
 
-        return !!preg_match(
+        return ! ! preg_match(
             '#^[\\s/*]*@'.preg_quote($annotation, '#').'(?=\W|$)#m',
-            $target->getDocComment()
+            strval($target->getDocComment())
         );
     }
 
@@ -50,7 +52,7 @@ abstract class Annotation
      */
     protected function getEachValue($target, $annotation)
     {
-        if (!$this->hasAnnotation($target, $annotation)) {
+        if (! $this->hasAnnotation($target, $annotation)) {
             return null;
         }
         $vals = [];
@@ -58,19 +60,20 @@ abstract class Annotation
         while (true) {
             $offset = 0;
             $matches = [];
-            if (!preg_match(
+            if (! preg_match(
                 '#^@'.preg_quote($annotation, '#').'\\s*(?=\()#m',
                 $doc,
                 $matches,
                 PREG_OFFSET_CAPTURE,
                 $offset
-            )) {
+            )
+            ) {
                 return $vals;
             }
             $offset = $matches[0][1] + strlen($matches[0][0]);
             $doc = substr($doc, $offset);
             $nValues = (new AnnotationParser($doc))->parse();
-            if (!is_null($nValues)) {
+            if (! is_null($nValues)) {
                 $vals[] = $nValues;
             }
         }
@@ -88,7 +91,7 @@ abstract class Annotation
      */
     protected function getValues($target, $annotation)
     {
-        if (!$this->hasAnnotation($target, $annotation)) {
+        if (! $this->hasAnnotation($target, $annotation)) {
             return null;
         }
         return array_reduce(

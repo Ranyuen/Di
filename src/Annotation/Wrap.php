@@ -4,19 +4,21 @@
  *
  * @author    Ranyuen <cal_pone@ranyuen.com>
  * @author    ne_Sachirou <utakata.c4se@gmail.com>
- * @copyright 2014-2015 Ranyuen
+ * @copyright 2014-2021 Ranyuen
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
  * @link      https://github.com/Ranyuen/Di
  */
 
+declare(strict_types=1);
+
 namespace Ranyuen\Di\Annotation;
 
-use Ranyuen\Di\Reflection\Annotation;
+use Ranyuen\Di\Reflection\AbstractAnnotation;
 
 /**
  * Wrap annotation.
  */
-class Wrap extends Annotation
+class Wrap extends AbstractAnnotation
 {
     /**
      * Gather wraps.
@@ -29,7 +31,8 @@ class Wrap extends Annotation
     {
         $wraps = [];
         foreach ($target->getMethods() as $method) {
-            if ($advices = $this->getWrap($method)) {
+            $advices = $this->getWrap($method);
+            if ($advices) {
                 $name = $method->getName();
                 foreach ($advices as $advice) {
                     $wraps[$advice][] = $name;

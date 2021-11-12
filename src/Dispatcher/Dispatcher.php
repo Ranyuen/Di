@@ -4,10 +4,12 @@
  *
  * @author    Ranyuen <cal_pone@ranyuen.com>
  * @author    ne_Sachirou <utakata.c4se@gmail.com>
- * @copyright 2014-2015 Ranyuen
+ * @copyright 2014-2021 Ranyuen
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
  * @link      https://github.com/Ranyuen/Di
  */
+
+declare(strict_types=1);
 
 namespace Ranyuen\Di\Dispatcher;
 
@@ -27,7 +29,7 @@ class Dispatcher
      */
     public static function isRegex($str)
     {
-        if (!(is_string($str) && preg_match('/\A[^A-Za-z0-9\\\s]/', $str))) {
+        if (! (is_string($str) && preg_match('/\A[^A-Za-z0-9\\\s]/', $str))) {
             return false;
         }
         $delimiter = $str[0];
@@ -41,7 +43,7 @@ class Dispatcher
             $delimiter = $delimiters[$delimiter];
         }
 
-        return !!preg_match('/'.preg_quote($delimiter, '/').'[imsxeADSUXJu]*\z/', $str);
+        return ! ! preg_match('/'.preg_quote($delimiter, '/').'[imsxeADSUXJu]*\z/', $str);
     }
 
     private $c;
@@ -97,14 +99,15 @@ class Dispatcher
                 return preg_match($func, $subject, $matches, $flags, $offset);
             };
         }
-        if (is_string($func) && (false !== strpos($func, '@'))) {
+        if (is_string($func) && (strpos($func, '@') !== false)) {
             list($interface, $method) = explode('@', $func);
             $invocation = function () use ($thisObj, $interface, $method) {
-                if (!is_object($thisObj) || !($thisObj instanceof $interface)) {
+                if (! is_object($thisObj) || ! ($thisObj instanceof $interface)) {
+                    $getByType = $this->c->getByType($interface);
                     if (isset($this->c[$interface])) {
                         $thisObj = $this->c[$interface];
-                    } elseif ($thisObj = $this->c->getByType($interface)) {
-                        null;
+                    } elseif ($getByType) {
+                        $thisObj = $getByType;
                     } else {
                         $thisObj = $this->c->newInstance($interface);
                     }
@@ -115,6 +118,6 @@ class Dispatcher
             $params = (new \ReflectionMethod($interface, $method))->getParameters();
             return new ParametrizedInvokable($invocation, $params);
         }
-        throw new Exception('Not a callable: '.(string) $func);
+        throw new Exception('Not a callable: '. (string) $func);
     }
 }

@@ -1,10 +1,11 @@
 <?php
+
 require 'tests/Fixture/MomongaAnnotation.php';
 
 use Fixture\MomongaAnnotated;
 use Fixture\MomongaAnnotation;
 
-class CustomAnnotationTest extends PHPUnit_Framework_TestCase
+class CustomAnnotationTest extends \PHPUnit\Framework\TestCase
 {
     private $isNotMomnga;
     private $momonga1;

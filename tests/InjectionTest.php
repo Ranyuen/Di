@@ -1,4 +1,5 @@
 <?php
+
 require_once 'tests/Fixture/Config.php';
 require_once 'tests/Fixture/InjectToConstructor.php';
 require_once 'tests/Fixture/InjectToProperties.php';
@@ -10,7 +11,7 @@ use Fixture\InjectToProperties;
 use Fixture\Momonga;
 use Ranyuen\Di\Container;
 
-class InjectionTest extends PHPUnit_Framework_TestCase
+class InjectionTest extends \PHPUnit\Framework\TestCase
 {
     /** @var Container */
     public $container;
@@ -23,10 +24,13 @@ class InjectionTest extends PHPUnit_Framework_TestCase
         $this->container['cfg'] = function ($c) {
             return new Config();
         };
-        $this->container['num'] = function ($c) { return 42; };
+        $this->container['num'] = function ($c) {
+            return 42;
+        };
         $this->container->bind(
             'Fixture\Momonga',
-            $this->momongaId, function ($c) {
+            $this->momongaId,
+            function ($c) {
                 return new Momonga();
             }
         );

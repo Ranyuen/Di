@@ -4,10 +4,13 @@
  *
  * @author    Ranyuen <cal_pone@ranyuen.com>
  * @author    ne_Sachirou <utakata.c4se@gmail.com>
- * @copyright 2014-2015 Ranyuen
+ * @copyright 2014-2021 Ranyuen
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
  * @link      https://github.com/Ranyuen/Di
  */
+
+declare(strict_types=1);
+
 namespace Ranyuen\Di\Reflection;
 
 require_once 'vendor/hafriedlander/php-peg/autoloader.php';

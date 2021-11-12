@@ -1,4 +1,5 @@
 <?php
+
 namespace Fixture;
 
 function dpFunc($test, $momonga, Momonga $m)

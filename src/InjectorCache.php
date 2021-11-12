@@ -4,10 +4,12 @@
  *
  * @author    Ranyuen <cal_pone@ranyuen.com>
  * @author    ne_Sachirou <utakata.c4se@gmail.com>
- * @copyright 2014-2015 Ranyuen
+ * @copyright 2014-2021 Ranyuen
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
  * @link      https://github.com/Ranyuen/Di
  */
+
+declare(strict_types=1);
 
 namespace Ranyuen\Di;
 
@@ -49,19 +51,19 @@ class InjectorCache
      */
     public function getInject($className)
     {
-        if (!isset($this->cache[$className])) {
+        if (! isset($this->cache[$className])) {
             $this->cache[$className] = [
                 'inject'      => null,
                 'newInstance' => null,
             ];
         }
-        if (!$this->cache[$className]['inject']) {
+        if (! $this->cache[$className]['inject']) {
             $class = new \ReflectionClass($className);
             $annotation = new Annotation\Inject();
             $deps = [];
             $reflector = new KeyReflector($this->c);
             foreach ($class->getProperties() as $prop) {
-                if (!$annotation->isInjectable($prop)) {
+                if (! $annotation->isInjectable($prop)) {
                     continue;
                 }
                 $key = $reflector->detectKey($prop);
@@ -93,13 +95,13 @@ class InjectorCache
      */
     public function getNewInstance($className)
     {
-        if (!isset($this->cache[$className])) {
+        if (! isset($this->cache[$className])) {
             $this->cache[$className] = [
                 'inject'      => null,
                 'newInstance' => null,
             ];
         }
-        if (!$this->cache[$className]['newInstance']) {
+        if (! $this->cache[$className]['newInstance']) {
             $class = new \ReflectionClass($className);
             if ($class->hasMethod('__construct')) {
                 $dispatcher = new NakedDispatcher($this->c);

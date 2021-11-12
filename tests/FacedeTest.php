@@ -1,9 +1,10 @@
 <?php
+
 require_once 'tests/Fixture/Lighter.php';
 
 use Ranyuen\Di\Container;
 
-class FacadeTest extends PHPUnit_Framework_TestCase
+class FacadeTest extends \PHPUnit\Framework\TestCase
 {
     public function testBasicFacade()
     {

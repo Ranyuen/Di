@@ -4,10 +4,12 @@
  *
  * @author    Ranyuen <cal_pone@ranyuen.com>
  * @author    ne_Sachirou <utakata.c4se@gmail.com>
- * @copyright 2014-2015 Ranyuen
+ * @copyright 2014-2021 Ranyuen
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
  * @link      https://github.com/Ranyuen/Di
  */
+
+declare(strict_types=1);
 
 namespace Ranyuen\Di;
 
@@ -43,11 +45,11 @@ class Container extends Pimple\Container
      */
     public static function setAsFacade(Container $c)
     {
-        if (!self::$facade) {
+        if (! self::$facade) {
             spl_autoload_register(
                 function ($interface) {
                     $c = Container::$facade;
-                    if (!$c->getFacadeContent($interface)) {
+                    if (! $c->getFacadeContent($interface)) {
                         return;
                     }
                     $render = function () use ($interface) {
@@ -94,7 +96,7 @@ class Container extends Pimple\Container
     {
         parent::__construct($vals);
         $this->cache = new InjectorCache($this);
-        if (!self::$facade) {
+        if (! self::$facade) {
             self::setAsFacade($this);
         }
     }
@@ -121,7 +123,7 @@ class Container extends Pimple\Container
             class_parents($interface),
             class_uses($interface)
         ) as $parent) {
-            if (!isset($this->classes[$parent])) {
+            if (! isset($this->classes[$parent])) {
                 $this->classes[$parent] = $val;
             }
         }
@@ -138,7 +140,7 @@ class Container extends Pimple\Container
      */
     public function getByType($interface)
     {
-        if (!isset($this->classes[$interface])) {
+        if (! isset($this->classes[$interface])) {
             return;
         }
 
@@ -200,7 +202,7 @@ class Container extends Pimple\Container
      */
     public function inject($obj)
     {
-        if (!is_object($obj)) {
+        if (! is_object($obj)) {
             return $obj;
         }
         $injector = $this->cache->getInject(get_class($obj)); // This must not fail.
@@ -260,11 +262,11 @@ class Container extends Pimple\Container
      */
     public function getFacadeContent($facadeName)
     {
-        if (!isset($this->facades[$facadeName])) {
+        if (! isset($this->facades[$facadeName])) {
             return;
         }
         $contentName = $this->facades[$facadeName];
-        if (!isset($this[$contentName])) {
+        if (! isset($this[$contentName])) {
             return;
         }
 
@@ -278,7 +280,7 @@ class Container extends Pimple\Container
         foreach ($wraps as $advice => $methods) {
             $this->wrap($interface->getName(), $methods, $this[$advice]);
         }
-        if (!isset($this->wraps[$interface->getName()])) {
+        if (! isset($this->wraps[$interface->getName()])) {
             $this->wraps[$interface->getName()] = $interface->getName();
         }
     }

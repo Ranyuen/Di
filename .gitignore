@@ -1,12 +1,37 @@
+.php-cs-fixer.cache
 .php_cs.cache
-build/
 
-# Created by https://www.gitignore.io
+
+# Created by https://www.toptal.com/developers/gitignore/api/composer,phpunit,phpcodesniffer
+# Edit at https://www.toptal.com/developers/gitignore?templates=composer,phpunit,phpcodesniffer
 
 ### Composer ###
 composer.phar
-vendor/
+/vendor/
 
-# Commit your application's lock file http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file
+# Commit your application's lock file https://getcomposer.org/doc/01-basic-usage.md#commit-your-composer-lock-file-to-version-control
 # You may choose to ignore a library lock file http://getcomposer.org/doc/02-libraries.md#lock-file
 # composer.lock
+
+### PHPCodeSniffer ###
+# CodeSniffer
+
+/vendor/*
+/wpcs/*
+
+### PHPUnit ###
+# Covers PHPUnit
+# Reference: https://phpunit.de/
+
+# Generated files
+.phpunit.result.cache
+.phpunit.cache
+
+# PHPUnit
+/app/phpunit.xml
+/phpunit.xml
+
+# Build data
+/build/
+
+# End of https://www.toptal.com/developers/gitignore/api/composer,phpunit,phpcodesniffer

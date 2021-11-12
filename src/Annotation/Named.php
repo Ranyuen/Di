@@ -4,19 +4,21 @@
  *
  * @author    Ranyuen <cal_pone@ranyuen.com>
  * @author    ne_Sachirou <utakata.c4se@gmail.com>
- * @copyright 2014-2015 Ranyuen
+ * @copyright 2014-2021 Ranyuen
  * @license   http://www.gnu.org/copyleft/gpl.html GPL
  * @link      https://github.com/Ranyuen/Di
  */
 
+declare(strict_types=1);
+
 namespace Ranyuen\Di\Annotation;
 
-use Ranyuen\Di\Reflection\Annotation;
+use Ranyuen\Di\Reflection\AbstractAnnotation;
 
 /**
  * Named annotation.
  */
-class Named extends Annotation
+class Named extends AbstractAnnotation
 {
     /**
      * Get the values of @Named annotation.

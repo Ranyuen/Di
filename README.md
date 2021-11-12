@@ -1,26 +1,25 @@
-[![Build Status](https://travis-ci.org/Ranyuen/Di.svg)](https://travis-ci.org/Ranyuen/Di)
-[![HHVM Status](http://hhvm.h4cc.de/badge/ranyuen/di.svg)](http://hhvm.h4cc.de/package/ranyuen/di)
+![test](https://github.com/Ranyuen/Di/workflows/test/badge.svg)
 
-Ranyuen/Di
-==
+# Ranyuen/Di
+
 Annotation based simple DI (Dependency Injection) & AOP (Aspect Oriented Programming) at PHP.
 
-Features
---
+## Features
+
 1. Compatible with [Pimple 3](http://pimple.sensiolabs.org/).
 2. Zero configuration. Injection through reflection and annotations. It's easy!
 3. AOP support.
 
-Install
---
+## Install
+
 ```sh
 composer require ranyuen/di
 ```
 
-Support PHP >=5.4 and latest HHVM.
+Support PHP >=7.4.
 
-DI Example
---
+## DI Example
+
 Ranyuen/Di just extends Pimple. So we can use this same as Pimple 3.
 
 ```php
@@ -211,9 +210,10 @@ var_dump('rocket' === Station::launch());
 ?>
 ```
 
-AOP Example
---
+## AOP Example
+
 Basic AOP example.
+
 ```php
 <?php
 class Monday
@@ -274,4 +274,5 @@ $tuesday = $c->newInstance('Tuesday');
 var_dump(5 * 7 + 4 + 3 === $tuesday->wednesday(5));
 ?>
 ```
+
 <!-- vim:ft=php: -->
